@@ -43,30 +43,36 @@ const toggleMenu = () => { menuAbierto.value = !menuAbierto.value }
 
       <!-- Logo -->
       <router-link to="/" class="navbar-logo">
-        Expedientes <span class="logo-accent">C</span>
+        <img :src="temaClaro ? '/logo_b.png' : '/logo_w.png'" alt="Logo Expedientes C" class="nav-logo-img">
+        <span>Expedientes <span class="logo-accent">C</span></span>
       </router-link>
 
-      <!-- Menú desktop y botón de tema -->
+      <!-- Menú desktop (ahora SOLO contiene los links) -->
       <div class="navbar-menu">
         <router-link to="/causas" class="nav-item">🕸️ Mapa Judicial</router-link>
         <router-link to="/transparencia" class="nav-item nav-item-accent">Transparencia</router-link>
+      </div>
+
+      <!-- NUEVO: Contenedor de acciones siempre visible -->
+      <div style="display: flex; align-items: center; gap: 12px;">
         
+        <!-- Botón de tema -->
         <button class="tema-btn" @click="toggleTema" :title="temaClaro ? 'Modo oscuro' : 'Modo claro'">
           {{ temaClaro ? '☀️' : '🌙' }}
         </button>
-      </div>
 
-      <!-- Hamburger mobile -->
-      <button
-        class="hamburger"
-        :class="{ abierto: menuAbierto }"
-        @click="toggleMenu"
-        aria-label="Abrir menú"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+        <!-- Hamburger mobile -->
+        <button
+          class="hamburger"
+          :class="{ abierto: menuAbierto }"
+          @click="toggleMenu"
+          aria-label="Abrir menú"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
 
     </div>
 

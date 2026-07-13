@@ -2,28 +2,40 @@
   <div class="home-container">
 
     <section class="home-hero">
-      <h1 class="home-title">Expedientes <span class="accent">C</span></h1>
-      
-      <div class="hero-eyebrow">Chile · Registro Público</div>
-      
-      <p class="home-subtitle">
-        Base de datos de probidad y transparencia.<br class="hide-mobile">
-        Registro de autoridades, instituciones de orden y actores privados.
-      </p>
+      <div class="hero-content-wrapper">
+        
+        <!-- Lado Izquierdo: Textos y Botones -->
+        <div class="hero-text-side">
+          <h1 class="home-title">Expedientes <span class="accent">C</span></h1>
+          
+          <div class="hero-eyebrow">Chile · Registro Público</div>
+          
+          <p class="home-subtitle">
+            Base de datos de probidad y transparencia.<br class="hide-mobile">
+            Registro de autoridades, instituciones de orden y actores privados.
+          </p>
 
-      <div class="hero-actions">
-        <router-link to="/causas" class="action-btn primary-btn">
-          🕸️ Ver Mapa de Redes Judiciales
-        </router-link>
+          <div class="hero-actions">
+            <router-link to="/causas" class="action-btn primary-btn">
+              🕸️ Ver Mapa de Redes Judiciales
+            </router-link>
+          </div>
+        </div>
+
+        <!-- Lado Derecho: Logo Dinámico (Oculto en móvil) -->
+        <div class="hero-logo-side">
+          <img src="/logo_w.png" class="hero-logo logo-oscuro" alt="Logo Expedientes C">
+          <img src="/logo_b.png" class="hero-logo logo-claro" alt="Logo Expedientes C">
+        </div>
+
       </div>
     </section>
 
-    <!-- 📊 SECCIÓN DE GRÁFICOS (PANEL DE TRANSPARENCIA) -->
-    <section class="home-charts">
-      <div class="macro-header">
-        <h2 class="macro-title">Panel de Transparencia</h2>
-        <p class="macro-desc">Métricas generales en tiempo real sobre causas y estados judiciales.</p>
-      </div>
+    <!-- 📊 SECCIÓN 1: GRÁFICOS (PANEL DE TRANSPARENCIA) -->
+    <section class="seccion-principal graficos-wrap">
+      
+      <h2 class="titulo-seccion">Panorama de Transparencia</h2>
+      <p class="subtitulo-seccion">Métricas y estadísticas en tiempo real sobre el estado de las investigaciones a nivel nacional.</p>
 
       <div class="charts-grid">
         <!-- Gráfico 1: Estado Global -->
@@ -53,11 +65,16 @@
     </section>
     <!-- FIN SECCIÓN GRÁFICOS -->
 
-    <section class="home-categories">
+    <!-- 🗂️ SECCIÓN 2: DIRECTORIO DE CATEGORÍAS -->
+    <section class="seccion-principal">
+      
+      <h2 class="titulo-seccion">Directorio de Entidades y Autoridades</h2>
+      <p class="subtitulo-seccion">Explora los expedientes organizados por ramas del Estado, fuerzas de orden y sector privado.</p>
       
       <div v-for="macro in macroCategorias" :key="macro.id" class="macro-section">
         <div class="macro-header">
-          <h2 class="macro-title">{{ macro.titulo }}</h2>
+          <!-- Cambiamos a h3 para mantener una jerarquía correcta (SEO) -->
+          <h3 class="macro-title">{{ macro.titulo }}</h3>
           <p class="macro-desc">{{ macro.descripcion }}</p>
         </div>
 

@@ -133,9 +133,25 @@ a { text-decoration: none; }
   letter-spacing: -0.02em;
   flex-shrink: 0;
   transition: opacity 0.2s;
+  /* Nuevas reglas para alinear la imagen y el texto */
+  display: flex;
+  align-items: center;
+  gap: 10px; 
 }
 
 .navbar-logo:hover { opacity: 0.85; }
+
+/* NUEVO: Control de tamaño y animación del logo */
+.nav-logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.navbar-logo:hover .nav-logo-img {
+  transform: scale(1.05); /* Pequeño efecto al pasar el mouse */
+}
 
 .logo-accent { color: var(--accent-red); }
 
@@ -1798,15 +1814,13 @@ input:focus-visible {
 
 /* ─── 12. RESPONSIVE ─────────────────────────────────── */
 
-/* Navbar mobile */
-@media (max-width: 768px) {
-  .navbar-inner { padding: 0 16px; }
-  .navbar-menu  { display: none; }
-  .hamburger    { display: flex; }
-  .mobile-menu  { display: flex; }
+/* 1. Pantallas grandes / Tablet horizontal */
+@media (max-width: 1200px) {
+  .layout-principal { grid-template-columns: 70px 260px 1fr; gap: 0 16px; }
+  .home-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* Tablet genérico */
+/* 2. Tablet genérico */
 @media (max-width: 1024px) {
   .page-inner     { padding: 0 20px; }
   .hero-inner     { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 20px; }
@@ -1841,22 +1855,21 @@ input:focus-visible {
   .nodo-politico { width: auto; }
 }
 
-/* Tablet causas */
-@media (max-width: 1200px) {
-  .layout-principal { grid-template-columns: 70px 260px 1fr; gap: 0 16px; }
-}
-
-/* Home grid */
-@media (max-width: 1200px) {
-  .home-grid { grid-template-columns: repeat(4, 1fr); }
-}
-
+/* 3. Home grid intermedio */
 @media (max-width: 900px) {
   .home-grid       { grid-template-columns: repeat(3, 1fr); }
   .home-container  { padding: 0 20px 60px; }
 }
 
-/* Mobile pequeño */
+/* 4. Navbar mobile */
+@media (max-width: 768px) {
+  .navbar-inner { padding: 0 16px; }
+  .navbar-menu  { display: none; }
+  .hamburger    { display: flex; }
+  .mobile-menu  { display: flex; }
+}
+
+/* 5. Mobile pequeño */
 @media (max-width: 640px) {
   .hero-section   { padding: 28px 0 24px; }
   .stats-grid     { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -1929,4 +1942,97 @@ input:focus-visible {
 
 @media (min-width: 641px) {
   .hide-desktop { display: none !important; }
+}
+
+/* Nuevos Títulos Globales y Separaciones */
+.seccion-principal {
+  margin-bottom: 40px;
+}
+
+.graficos-wrap {
+  padding-bottom: 60px;
+  margin-bottom: 60px;
+  border-bottom: 1px solid var(--border);
+}
+
+.titulo-seccion {
+  color: var(--text-main);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+
+.subtitulo-seccion {
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  margin-bottom: 32px;
+  max-width: 800px;
+}
+
+/* Ajuste responsive para los nuevos títulos */
+@media (max-width: 640px) {
+  .graficos-wrap {
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+  }
+  .titulo-seccion {
+    font-size: 1.6rem;
+  }
+  .subtitulo-seccion {
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+  }
+}
+
+/* Layout del Hero dividido en dos columnas */
+.hero-content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+
+.hero-text-side {
+  flex: 1; /* Toma el espacio disponible */
+}
+
+/* Contenedor del Logo gigante */
+.hero-logo-side {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 200px; /* Lo separa un poco del borde derecho */
+}
+
+.hero-logo {
+  height: 280px; /* Tamaño ideal para que no sea más alto que el texto */
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+  animation: flotar 6s ease-in-out infinite; /* Animación premium */
+}
+
+/* Animación sutil de flotación */
+@keyframes flotar {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Lógica para alternar colores según el tema global */
+.hero-logo.logo-claro { display: none; }
+.hero-logo.logo-oscuro { display: block; }
+
+:root.tema-claro .hero-logo.logo-claro { display: block; }
+:root.tema-claro .hero-logo.logo-oscuro { display: none; }
+
+/* 3. Home grid intermedio */
+@media (max-width: 900px) {
+  .home-grid       { grid-template-columns: repeat(3, 1fr); }
+  .home-container  { padding: 0 20px 60px; }
+  
+  /* NUEVO: Ocultamos el logo gigante en pantallas de tablet para abajo */
+  .hero-logo-side  { display: none; }
 }
