@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vercel/analytics": "^2.0.1",
+    "@vercel/analytics": "^2.2.0-canary",
     "bulma": "^1.0.4",
     "chart.js": "^4.5.1",
     "firebase": "^12.15.0",

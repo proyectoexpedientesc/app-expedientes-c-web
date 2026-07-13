@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView, useRoute } from 'vue-router'
 import { ref, watch, onMounted } from 'vue'
+import { Analytics } from '@vercel/analytics/vue'
 
 const temaClaro = ref(false)
 const menuAbierto = ref(false)
@@ -86,4 +87,5 @@ const toggleMenu = () => { menuAbierto.value = !menuAbierto.value }
 
   <!-- AQUÍ SE CARGA EL HOMEVIEW Y LAS DEMÁS PÁGINAS -->
   <RouterView />
+  <Analytics />
 </template>
