@@ -598,9 +598,11 @@ const macroCategorias = [
   {
     id: 'privado',
     titulo: 'Sector Privado, Legal y Fundaciones',
-    descripcion: 'Empresas, empresarios, abogados y fundaciones involucrados en causas.',
+    descripcion: 'Empresas, empresarios, abogados, fundaciones y actores involucrados en causas judiciales.',
     items: [
       { tipo: 'empresas',    label: 'Empresas',    icono: '🏭' },
+      { tipo: 'empresarios', label: 'Empresarios', icono: '👔' },
+      { tipo: 'abogados',    label: 'Abogados',    icono: '⚖️' },
       { tipo: 'fundaciones', label: 'Fundaciones', icono: '🤝' }
     ]
   }
