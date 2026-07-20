@@ -62,9 +62,9 @@
           </div>
         </div>
 
-        <!-- Gráfico 4: Partidos con Mayor Controversia -->
+        <!-- Gráfico 4: Partidos por Estado Judicial -->
         <div class="chart-card">
-          <h3 class="chart-title">Partidos por Nivel de Controversia</h3>
+          <h3 class="chart-title">Partidos con Más Casos en Observación o Críticos</h3>
           <div class="chart-wrapper">
             <Bar :data="dataPartidos" :options="opcionesPartidos" />
           </div>
@@ -179,55 +179,48 @@ const ESTADO = {
   Crítico:     '#ef4444',
 }
 
-// Espectro político chileno
-// Derecha → azules/morados   |   Centro → amarillo/ámbar   |   Izquierda → rojos/naranjos
-const ESPECTRO_POLITICO = {
-  // Far-right / Derecha dura
-  'Partido Republicano':          '#172554',  // azul muy oscuro
-  'Republicano':                  '#172554',
+// ── Espectro político chileno: lista canónica ORDENADA izquierda → derecha ──
+// id: usado para intentar cruzar con politico.id_partido
+// aliases: variantes de texto que pueden venir en politico.partido_actual
+const PARTIDOS_CONFIG = [
+  { id: 'pc',            nombre: 'Partido Comunista',           color: '#7f1d1d', aliases: ['partido comunista', 'pcch', 'pc'] },
+  { id: 'fa',             nombre: 'Frente Amplio',               color: '#ef4444', aliases: ['frente amplio', 'fa'] },
+  { id: 'cs',             nombre: 'Convergencia Social',         color: '#f43f5e', aliases: ['convergencia social', 'cs'] },
+  { id: 'ps',             nombre: 'Partido Socialista',          color: '#e11d48', aliases: ['partido socialista', 'ps'] },
+  { id: 'pr',             nombre: 'Partido Radical',             color: '#dc2626', aliases: ['partido radical', 'pr'] },
+  { id: 'ppd',            nombre: 'Partido por la Democracia',   color: '#c2410c', aliases: ['partido por la democracia', 'ppd'] },
+  { id: 'pdc',            nombre: 'Partido Demócrata Cristiano', color: '#b45309', aliases: ['partido demócrata cristiano', 'pdc'] },
+  { id: 'amarillos',      nombre: 'Amarillos',                   color: '#ca8a04', aliases: ['amarillos'] },
+  { id: 'democratas',     nombre: 'Partido Demócratas',          color: '#0891b2', aliases: ['partido demócratas', 'demócratas'] },
+  { id: 'evopoli',        nombre: 'Evópoli',                     color: '#6d28d9', aliases: ['evópoli', 'evopoli'] },
+  { id: 'rn',             nombre: 'Renovación Nacional (RN)',    color: '#1d4ed8', aliases: ['renovación nacional', 'renovación nacional (rn)', 'rn'] },
+  { id: 'udi',            nombre: 'UDI',                         color: '#1e3a8a', aliases: ['udi'] },
+  { id: 'republicano',    nombre: 'Partido Republicano',         color: '#172554', aliases: ['partido republicano', 'republicano'] },
+  { id: 'independiente',  nombre: 'Independientes / Sin Partido',color: '#94a3b8', aliases: ['independiente', 'sin partido', 'independientes', 'independientes / sin partido'] },
+]
 
-  // Derecha
-  'UDI':                          '#1e3a8a',  // azul profundo
-  'Renovación Nacional':          '#1d4ed8',  // azul
-  'Renovación Nacional (RN)':     '#1d4ed8',
-  'RN':                           '#1d4ed8',
+// Mapa rápido alias(normalizado) → id canónico, construido desde PARTIDOS_CONFIG
+const ALIAS_A_ID = PARTIDOS_CONFIG.reduce((acc, p) => {
+  p.aliases.forEach(a => { acc[a] = p.id })
+  return acc
+}, {})
 
-  // Centro-derecha liberal
-  'Evópoli':                      '#6d28d9',  // violeta
+const normalizar = (txt) => (txt || '').toString().trim().toLowerCase()
 
-  // Centro
-  'Partido Demócratas':           '#0891b2',  // cyan
-  'Partido Demócrata Cristiano':  '#b45309',  // ámbar oscuro
-  'PDC':                          '#b45309',
-  'Amarillos':                    '#ca8a04',  // amarillo
-
-  // Centro-izquierda
-  'Partido por la Democracia':    '#c2410c',  // naranja-rojo
-  'PPD':                          '#c2410c',
-  'Partido Radical':              '#dc2626',  // rojo
-  'PR':                           '#dc2626',
-
-  // Izquierda
-  'Partido Socialista':           '#e11d48',  // rosa-rojo
-  'PS':                           '#e11d48',
-  'Convergencia Social':          '#f43f5e',
-  'CS':                           '#f43f5e',
-  'Frente Amplio':                '#ef4444',  // rojo FA
-  'FA':                           '#ef4444',
-
-  // Far-left
-  'Partido Comunista':            '#7f1d1d',  // rojo oscuro
-  'PCCh':                         '#7f1d1d',
-  'PC':                           '#7f1d1d',
-
-  // Neutros
-  'Independiente':                '#94a3b8',
-  'Sin partido':                  '#94a3b8',
-  'Independientes / Sin Partido': '#94a3b8',
-  'Independientes':               '#94a3b8',
+// Resuelve el id canónico de partido de un político: primero por id_partido, luego por nombre
+const resolverIdPartido = (politico) => {
+  if (politico.id_partido) {
+    const idNorm = normalizar(politico.id_partido)
+    if (PARTIDOS_CONFIG.some(p => p.id === idNorm)) return idNorm
+  }
+  const nombreNorm = normalizar(politico.partido_actual)
+  return ALIAS_A_ID[nombreNorm] || null
 }
 
-const colorPartido = (nombre) => ESPECTRO_POLITICO[nombre] ?? '#94a3b8'
+const colorPartido = (nombre) => {
+  const cfg = PARTIDOS_CONFIG.find(p => p.nombre === nombre)
+  return cfg ? cfg.color : '#94a3b8'
+}
 
 // Paleta institucional por rama del Estado (de más frío a más cálido)
 const PALETA_RAMAS = [
@@ -339,7 +332,7 @@ const opcionesPartidos = computed(() => ({
     },
     y: {
       grid:  { display: false },
-      ticks: { color: CC.value.text, font: { size: 11 } }
+      ticks: { color: CC.value.text, font: { size: 11 }, autoSkip: false }  // ← agregado
     }
   }
 }))
@@ -448,27 +441,53 @@ const dataTopCriticos = computed(() => ({
   }]
 }))
 
-// Gráfico 4 — Partidos: espectro político izquierda→derecha
-const labelsPartidos = [
-  'Partido Republicano',
-  'UDI',
-  'Renovación Nacional (RN)',
-  'Independientes / Sin Partido',
-  'Partido Demócratas',
-  'Frente Amplio',
-  'Partido Comunista',
-]
+// Gráfico 4 — Partidos: cantidad de políticos en Crítico + Observación (ordenado por cantidad)
+const dataPartidos = computed(() => {
+  const conteo = {}   // id_partido → cantidad
+  PARTIDOS_CONFIG.forEach(p => { conteo[p.id] = 0 })
 
-const dataPartidos = computed(() => ({
-  labels: labelsPartidos,
-  datasets: [{
-    label: 'Nivel de Controversia',
-    data: [45, 42, 35, 28, 18, 12, 8],
-    backgroundColor: labelsPartidos.map(colorPartido),
-    borderRadius: 6,
-    borderSkipped: false
-  }]
-}))
+  let huboDatos = false
+
+  datosCrudos.value.forEach(politico => {
+    const idPartido = resolverIdPartido(politico)
+    if (!idPartido) return
+
+    const esObservacion = GRUPOS_ESTADO.Observación.includes(politico.estado_judicial)
+    const esCritico      = GRUPOS_ESTADO.Crítico.includes(politico.estado_judicial)
+
+    if (esObservacion || esCritico) {
+      conteo[idPartido]++
+      huboDatos = true
+    }
+  })
+
+  // Fallback de ejemplo si aún no hay datos cargados / ningún match
+  if (!huboDatos) {
+    conteo.republicano = 45
+    conteo.udi = 42
+    conteo.rn = 35
+    conteo.independiente = 28
+    conteo.democratas = 18
+    conteo.fa = 12
+    conteo.pc = 8
+  }
+
+  // Armar entradas completas y ORDENAR por cantidad descendente
+  const entradas = PARTIDOS_CONFIG
+    .map(p => ({ nombre: p.nombre, cantidad: conteo[p.id], color: p.color }))
+    .sort((a, b) => b.cantidad - a.cantidad)   // ← descendente: el de más casos primero
+
+  return {
+    labels: entradas.map(e => e.nombre),
+    datasets: [{
+      label: 'Políticos en Observación o Crítico',
+      data: entradas.map(e => e.cantidad),
+      backgroundColor: entradas.map(e => e.color),
+      borderRadius: 6,
+      borderSkipped: false
+    }]
+  }
+})
 
 // Gráfico 5 — Línea: evolución de causas por año
 const dataCausasPorAno = computed(() => {
