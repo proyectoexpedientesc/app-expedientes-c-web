@@ -20,14 +20,14 @@ const tiposValidos = [
   // Administración Local
   'gobernadores', 'alcaldes', 'concejales', 'consejeros',
   
-  // Órganos Autónomos (NUEVOS)
+  // Órganos Autónomos
   'fiscales', 'contraloria', 'tc',
   
   // Policías y Fuerzas Armadas
   'carabineros', 'pdi', 'ejercito',
   
-  // Sector Privado y Fundaciones
-  'empresas', 'fundaciones'
+  // Sector Privado, Legal y Fundaciones
+  'empresas', 'empresarios', 'abogados', 'fundaciones'
 ]
 
 const router = createRouter({

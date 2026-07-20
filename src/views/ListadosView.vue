@@ -127,8 +127,8 @@
                 <td class="td-avatar">
                   <div class="list-avatar">
                     <img
-                      v-if="getFoto(politico, getTipoDeCargo(politico.cargo)) && !fotosRotas.has(politico.id_oficial)"
-                      :src="getFoto(politico, getTipoDeCargo(politico.cargo))"
+                      v-if="getFoto(politico, politico.tipo) && !fotosRotas.has(politico.id_oficial)"
+                      :src="getFoto(politico, politico.tipo)"
                       :alt="politico.nombre"
                       class="list-foto"
                       @error="marcarFotoRota(politico.id_oficial)"
@@ -150,7 +150,7 @@
                 </td>
 
                 <td class="hide-sm">
-                  <span class="tipo-badge">{{ getLabelDeTipo(getTipoDeCargo(politico.cargo)) }}</span>
+                  <span class="tipo-badge">{{ getLabelDeTipo(politico.tipo) }}</span>
                 </td>
 
                 <td class="hide-sm">
@@ -192,52 +192,14 @@ const marcarFotoRota = (id) => { fotosRotas.value = new Set([...fotosRotas.value
 const getInitials = (nombre, apellidos) =>
   ((nombre?.[0] ?? '') + (apellidos?.[0] ?? '')).toUpperCase() || '?'
 
-// ── Navegar al detalle al hacer click en la fila ──────────────────────
+// ── Navegar al detalle usando directamente p.tipo ─────────────────────
 const irADetalle = (politico) => {
-  const tipo = getTipoDeCargo(politico.cargo)
-  if (tipo && politico.id_oficial) {
-    router.push(`/detalle/${tipo}/${politico.id_oficial}`)
+  if (politico.tipo && politico.id_oficial) {
+    router.push(`/detalle/${politico.tipo}/${politico.id_oficial}`)
   }
 }
 
-// ── Mapa tipo → cargos ────────────────────────────────────────────────
-const CARGOS_POR_TIPO = {
-  'diputados':                    ['Diputado', 'Diputada', 'Ex Diputado', 'Ex Diputada'],
-  'dictador':                     ['Dictador', 'Dictadora'],
-  'senadores':                    ['Senador', 'Senadora', 'Ex Senador', 'Ex Senadora'],
-  'presidentes':                  ['Presidente', 'Presidenta', 'Ex Presidente', 'Ex Presidenta'],
-  'ministros':                    ['Ministro', 'Ministra', 'Ex Ministro', 'Ex Ministra'],
-  'subsecretarios':               ['Subsecretario', 'Subsecretaria', 'Ex Subsecretario', 'Ex Subsecretaria'],
-  'seremis':                      ['Seremis', 'seremis', 'Seremi', 'seremi', 'SEREMI', 'Ex Seremi', 'Ex seremi', 'Ex SEREMI', 'Ex Seremi de Vivienda y Urbanismo', 'Ex Seremi (Designado, nunca asumió)'],
-  'gobernadores':                 ['Gobernador', 'Gobernadora', 'Ex Gobernador', 'Ex Gobernadora'],
-  'alcaldes':                     ['Alcalde', 'Alcaldesa', 'Ex Alcalde', 'Ex Alcaldesa'],
-  'delegados-presidenciales-reg': ['Delegado Presidencial Regional', 'Delegada Presidencial Regional'],
-  'delegados-presidenciales-pro': ['Delegado Presidencial Provincial', 'Delegada Presidencial Provincial'],
-  'concejales':                   ['Concejal', 'Concejala', 'Ex Concejal', 'Ex Concejala'],
-  'consejeros':                   ['Consejero', 'Consejera', 'Ex Consejero', 'Ex Consejera'],
-  'jueces':                       ['Juez', 'Jueza', 'Ex Juez', 'Ex Jueza'],
-  'ministros-corte-apelaciones':  ['Ministro de Corte de Apelaciones', 'Ministra de Corte de Apelaciones', 'Exministro de Corte de Apelaciones', 'Exministra de Corte de Apelaciones'],
-  'ministros-corte-suprema':      ['Ministro de Corte Suprema', 'Ministra de Corte Suprema'],
-  'fiscales':                     ['Fiscal Nacional', 'Fiscal Regional', 'Fiscal Adjunto'],
-  'contraloria':                  ['Contralor General', 'Subcontralor', 'Auditor de Contraloría'],
-  'tc':                           ['Ministro del TC', 'Ministra del TC', 'Presidente del TC'],
-  'carabineros':                  ['General Director', 'Oficial de Carabineros', 'Funcionario de Carabineros'],
-  'pdi':                          ['Director General', 'Prefecto', 'Detective'],
-  'ejercito':                     ['Comandante en Jefe', 'Oficial de Ejército', 'Militar', 'Jefe de Inteligencia', 'Exjefe de Inteligencia', 'General', 'General (r)'],
-  'empresas':                     ['Gerente', 'Directorio', 'Empresa', 'Empresario'],
-  'fundaciones':                  ['Directiva', 'Representante Legal', 'Fundación'],
-}
-
-const TIPO_POR_CARGO = Object.fromEntries(
-  Object.entries(CARGOS_POR_TIPO).flatMap(([tipo, cargos]) =>
-    cargos.map(cargo => [cargo, tipo])
-  )
-)
-
-const getTipoDeCargo = (cargo) => TIPO_POR_CARGO[cargo] ?? null
-
 // ── Grupos de estado para los filtros de tarjetas ─────────────────────
-// Agrupa todos los valores posibles del campo estado_judicial por categoría
 const GRUPOS_ESTADO = {
   'Limpio':      ['Limpio'],
   'Observación': ['Observación', 'Prescrita', 'En Litigio', 'En Litigio / Delatora'],
@@ -269,6 +231,8 @@ const categorias = [
   { tipo: 'pdi',                          label: 'PDI' },
   { tipo: 'ejercito',                     label: 'Ejército' },
   { tipo: 'empresas',                     label: 'Empresas' },
+  { tipo: 'empresarios',                  label: 'Empresarios' }, // <-- NUEVO
+  { tipo: 'abogados',                     label: 'Abogados' },    // <-- NUEVO
   { tipo: 'fundaciones',                  label: 'Fundaciones' },
 ]
 
@@ -281,7 +245,7 @@ const MACRO_MAP = {
   'gobernadores': 'local', 'consejeros': 'local', 'alcaldes': 'local', 'concejales': 'local',
   'fiscales': 'autonomos', 'contraloria': 'autonomos', 'tc': 'autonomos',
   'carabineros': 'policias', 'pdi': 'policias', 'ejercito': 'policias',
-  'empresas': 'privado', 'fundaciones': 'privado',
+  'empresas': 'privado', 'empresarios': 'privado', 'abogados': 'privado', 'fundaciones': 'privado', // <-- ACTUALIZADO EN SECTOR PRIVADO
 }
 
 const macroActual        = computed(() => MACRO_MAP[props.tipo] || 'ejecutivo')
@@ -310,10 +274,6 @@ onMounted(async () => {
   cargando.value = false
 })
 
-const cargosSeleccionados = computed(() =>
-  selectedTipos.value.flatMap(tipo => CARGOS_POR_TIPO[tipo] ?? [])
-)
-
 // ── Auxiliar: año más reciente para ordenamiento ──────────────────────
 const getAnoMasReciente = (politico) => {
   if (!politico.periodos_ejercicio || !Array.isArray(politico.periodos_ejercicio) || politico.periodos_ejercicio.length === 0) {
@@ -340,11 +300,11 @@ const formatPeriodos = (politico) => {
   }).join(', ')
 }
 
-// ── Lista principal ordenada cronológicamente (más reciente arriba) ───
+// ── Lista principal ordenada cronológicamente (usando directamente p.tipo)
 const listaPoliticos = computed(() => {
   if (selectedTipos.value.length === 0) return []
   return todosLosPoliticos.value
-    .filter(p => cargosSeleccionados.value.includes(p.cargo))
+    .filter(p => selectedTipos.value.includes(p.tipo))
     .sort((a, b) => {
       const anoA = getAnoMasReciente(a)
       const anoB = getAnoMasReciente(b)

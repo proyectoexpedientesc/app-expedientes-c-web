@@ -1,10 +1,10 @@
 export const getFoto = (persona, tipoCargo) => {
   if (!persona || !persona.id_oficial) return null;
   
-  // Extraemos solo el número del ID oficial (ej: de "dip_1009" obtenemos "1009")
+  // 1. Extraemos solo el número del ID oficial (ej: de "mcs_22" o "mca_71" obtenemos el número)
   const idNumerico = persona.id_oficial.split('_')[1];
   
-  // Apuntamos a la carpeta "fotos" que está dentro de "public"
-  // Vue lo interpretará automáticamente desde la raíz del sitio
+  // 2. Usamos el tipoCargo tal cual viene del JSON (ej: "corte_suprema" o "corte_apelaciones")
+  // Asegúrate de que tu carpeta en public/fotos/ se llame exactamente igual.
   return `/fotos/${tipoCargo}/${idNumerico}.jpg`;
 }

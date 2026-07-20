@@ -73,7 +73,6 @@
       
       <div v-for="macro in macroCategorias" :key="macro.id" class="macro-section">
         <div class="macro-header">
-          <!-- Cambiamos a h3 para mantener una jerarquía correcta (SEO) -->
           <h3 class="macro-title">{{ macro.titulo }}</h3>
           <p class="macro-desc">{{ macro.descripcion }}</p>
         </div>
@@ -120,33 +119,6 @@ const GRUPOS_ESTADO = {
   'Limpio':      ['Limpio'],
   'Observación': ['Observación', 'Prescrita', 'En Litigio', 'En Litigio / Delatora'],
   'Crítico':     ['Crítico', 'Condenado', 'Condenada', 'Condenada / Delatora'],
-}
-
-const CARGOS_POR_TIPO = {
-  'diputados':                    ['Diputado', 'Diputada', 'Ex Diputado', 'Ex Diputada'],
-  'dictador':                     ['Dictador', 'Dictadora'],
-  'senadores':                    ['Senador', 'Senadora', 'Ex Senador', 'Ex Senadora'],
-  'presidentes':                  ['Presidente', 'Presidenta', 'Ex Presidente', 'Ex Presidenta'],
-  'ministros':                    ['Ministro', 'Ministra', 'Ex Ministro', 'Ex Ministra'],
-  'subsecretarios':               ['Subsecretario', 'Subsecretaria', 'Ex Subsecretario', 'Ex Subsecretaria'],
-  'seremis':                      ['Seremis', 'seremis', 'Seremi', 'seremi', 'SEREMI', 'Ex Seremi', 'Ex seremi', 'Ex SEREMI', 'Ex Seremi de Vivienda y Urbanismo', 'Ex Seremi (Designado, nunca asumió)'],
-  'gobernadores':                 ['Gobernador', 'Gobernadora', 'Ex Gobernador', 'Ex Gobernadora'],
-  'alcaldes':                     ['Alcalde', 'Alcaldesa', 'Ex Alcalde', 'Ex Alcaldesa'],
-  'delegados-presidenciales-reg': ['Delegado Presidencial Regional', 'Delegada Presidencial Regional'],
-  'delegados-presidenciales-pro': ['Delegado Presidencial Provincial', 'Delegada Presidencial Provincial'],
-  'concejales':                   ['Concejal', 'Concejala', 'Ex Concejal', 'Ex Concejala'],
-  'consejeros':                   ['Consejero', 'Consejera', 'Ex Consejero', 'Ex Consejera'],
-  'jueces':                       ['Juez', 'Jueza', 'Ex Juez', 'Ex Jueza'],
-  'ministros-corte-apelaciones':  ['Ministro de Corte de Apelaciones', 'Ministra de Corte de Apelaciones', 'Exministro de Corte de Apelaciones', 'Exministra de Corte de Apelaciones'],
-  'ministros-corte-suprema':      ['Ministro de Corte Suprema', 'Ministra de Corte Suprema'],
-  'fiscales':                     ['Fiscal Nacional', 'Fiscal Regional', 'Fiscal Adjunto'],
-  'contraloria':                  ['Contralor General', 'Subcontralor', 'Auditor de Contraloría'],
-  'tc':                           ['Ministro del TC', 'Ministra del TC', 'Presidente del TC'],
-  'carabineros':                  ['General Director', 'Oficial de Carabineros', 'Funcionario de Carabineros'],
-  'pdi':                          ['Director General', 'Prefecto', 'Detective'],
-  'ejercito':                     ['Comandante en Jefe', 'Oficial de Ejército', 'Militar', 'Jefe de Inteligencia', 'Exjefe de Inteligencia', 'General', 'General (r)'],
-  'empresas':                     ['Gerente', 'Directorio', 'Empresa', 'Empresario'],
-  'fundaciones':                  ['Directiva', 'Representante Legal', 'Fundación'],
 }
 
 const COLORES = {
@@ -198,12 +170,10 @@ const opcionesBarrasSimples = {
 // --------------------------------------------------------
 // 3. PROCESAMIENTO REACTIVO DE DATOS (COMPUTED)
 // --------------------------------------------------------
-// Nota: Aquí almacenarás los datos de Firebase cuando los conectes
 const datosCrudos = ref([])
 
 // Gráfico 1: Dona de Estados Globales
 const dataEstados = computed(() => {
-  // Si no hay datos (aún no conecta Firebase), mostramos datos simulados
   if (datosCrudos.value.length === 0) {
     return {
       labels: ['Limpios', 'En Observación', 'Críticos'],
@@ -246,12 +216,7 @@ const dataSectoresApilados = computed(() => {
       ]
     }
   }
-
-  // Lógica real para cuando Firebase esté conectado:
-  // 1. Agrupar datosCrudos por "macroCategoria" identificando el tipo
-  // 2. Contar "Observación" y "Crítico" para cada macroCategoria
-  // 3. Retornar la estructura mapeada
-  return { labels: [], datasets: [] } // Placeholder para lógica real
+  return { labels: [], datasets: [] } 
 })
 
 // Gráfico 3: Top 5 Tipos Específicos Críticos
@@ -267,9 +232,7 @@ const dataTopCriticos = computed(() => {
       }]
     }
   }
-
-  // Lógica real: Filtrar solo Críticos, agrupar por `tipo`, ordenar y tomar los top 5
-  return { labels: [], datasets: [] } // Placeholder para lógica real
+  return { labels: [], datasets: [] } 
 })
 
 // --------------------------------------------------------
@@ -342,10 +305,12 @@ const macroCategorias = [
   },
   {
     id: 'privado',
-    titulo: 'Sector Privado y Fundaciones',
-    descripcion: 'Empresas, fundaciones y ejecutivos involucrados en causas judiciales.',
+    titulo: 'Sector Privado, Legal y Fundaciones',
+    descripcion: 'Empresas, empresarios, abogados, fundaciones y actores involucrados en causas judiciales.',
     items: [
       { tipo: 'empresas',    label: 'Empresas',    icono: '🏭' },
+      { tipo: 'empresarios', label: 'Empresarios', icono: '👔' }, // <-- NUEVO AGREGADO
+      { tipo: 'abogados',    label: 'Abogados',    icono: '⚖️' }, // <-- NUEVO AGREGADO
       { tipo: 'fundaciones', label: 'Fundaciones', icono: '🤝' }
     ]
   }

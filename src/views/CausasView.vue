@@ -151,8 +151,8 @@
                 <div class="nodo-politico">
                   <div class="nodo-avatar">
                     <img
-                      v-if="getFoto(politico, getTipoDeCargo(politico.cargo)) && !fotosRotas.has(politico.id_oficial)"
-                      :src="getFoto(politico, getTipoDeCargo(politico.cargo))"
+                      v-if="getFoto(politico, politico.tipo) && !fotosRotas.has(politico.id_oficial)"
+                      :src="getFoto(politico, politico.tipo)"
                       :alt="politico.nombre"
                       class="nodo-foto"
                       @error="marcarFotoRota(politico.id_oficial)"
@@ -169,7 +169,7 @@
                     </span>
                   </div>
                   <router-link
-                    :to="`/detalle/${getTipoDeCargo(politico.cargo)}/${politico.id_oficial}`"
+                    :to="`/detalle/${politico.tipo}/${politico.id_oficial}`"
                     class="nodo-link"
                   >
                     Abrir Ficha
@@ -283,50 +283,12 @@ watch(
 )
 
 onMounted(async () => {
-  // Scroll al top al abrir la página
   window.scrollTo({ top: 0, behavior: 'instant' })
-
   cargando.value = true
   politicos.value = await obtenerTodos()
   cargando.value = false
   nextTick(actualizarSombras)
 })
-
-// ── MAPEO DE CARGOS ───────────────────────────────────────────────────
-const CARGOS_POR_TIPO = {
-  'diputados':                    ['Diputado', 'Diputada', 'Ex Diputado', 'Ex Diputada'],
-  'dictador':                     ['Dictador', 'Dictadora'],
-  'senadores':                    ['Senador', 'Senadora', 'Ex Senador', 'Ex Senadora'],
-  'presidentes':                  ['Presidente', 'Presidenta', 'Ex Presidente', 'Ex Presidenta'],
-  'ministros':                    ['Ministro', 'Ministra', 'Ex Ministro', 'Ex Ministra'],
-  'subsecretarios':               ['Subsecretario', 'Subsecretaria', 'Ex Subsecretario', 'Ex Subsecretaria'],
-  'seremis':                      ['Seremis','seremis','Seremi', 'seremi', 'SEREMI', 'Ex Seremi', 'Ex seremi', 'Ex SEREMI'],
-  'gobernadores':                 ['Gobernador', 'Gobernadora', 'Ex Gobernador', 'Ex Gobernadora'],
-  'alcaldes':                     ['Alcalde', 'Alcaldesa', 'Ex Alcalde', 'Ex Alcaldesa'],
-  'delegados-presidenciales-reg': ['Delegado Presidencial Regional', 'Delegada Presidencial Regional'],
-  'delegados-presidenciales-pro': ['Delegado Presidencial Provincial', 'Delegada Presidencial Provincial'],
-  'concejales':                   ['Concejal', 'Concejala', 'Ex Concejal', 'Ex Concejala'],
-  'consejeros':                   ['Consejero', 'Consejera', 'Ex Consejero', 'Ex Consejera'],
-  'jueces':                       ['Juez', 'Jueza', 'Ex Juez', 'Ex Jueza'],
-  'ministros-corte-apelaciones': ['Ministro de Corte de Apelaciones', 'Ministra de Corte de Apelaciones', 'Exministro de Corte de Apelaciones', 'Exministra de Corte de Apelaciones'],
-  'ministros-corte-suprema':      ['Ministro de Corte Suprema', 'Ministra de Corte Suprema'],
-  'fiscales':                     ['Fiscal Nacional', 'Fiscal Regional', 'Fiscal Adjunto'],
-  'contraloria':                  ['Contralor General', 'Subcontralor', 'Auditor de Contraloría'],
-  'tc':                           ['Ministro del TC', 'Ministra del TC', 'Presidente del TC'],
-  'carabineros':                  ['General Director', 'Oficial de Carabineros', 'Funcionario de Carabineros'],
-  'pdi':                          ['Director General', 'Prefecto', 'Detective'],
-  'ejercito':                     ['Comandante en Jefe', 'Oficial de Ejército', 'Militar', 'Jefe de Inteligencia', 'Exjefe de Inteligencia', 'General', 'General (r)'],
-  'empresas':                     ['Gerente', 'Directorio', 'Empresa', 'Empresario'],
-  'fundaciones':                  ['Directiva', 'Representante Legal', 'Fundación'],
-}
-
-const TIPO_POR_CARGO = Object.fromEntries(
-  Object.entries(CARGOS_POR_TIPO).flatMap(([tipo, cargos]) =>
-    cargos.map(cargo => [cargo, tipo])
-  )
-)
-
-const getTipoDeCargo = (cargo) => TIPO_POR_CARGO[cargo] ?? null
 
 const getEstadoClass = (estado) => {
   switch (estado) {
