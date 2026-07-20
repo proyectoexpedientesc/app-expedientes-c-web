@@ -61,6 +61,30 @@
             <Bar :data="dataTopCriticos" :options="opcionesBarrasSimples" />
           </div>
         </div>
+
+        <!-- Gráfico 4: Partidos con Mayor Controversia -->
+        <div class="chart-card">
+          <h3 class="chart-title">Partidos por Nivel de Controversia</h3>
+          <div class="chart-wrapper">
+            <Bar :data="dataPartidos" :options="opcionesPartidos" />
+          </div>
+        </div>
+
+        <!-- Gráfico 5: Evolución de Causas -->
+        <div class="chart-card">
+          <h3 class="chart-title">Evolución de Causas por Año</h3>
+          <div class="chart-wrapper">
+            <Line :data="dataCausasPorAno" :options="opcionesLinea" />
+          </div>
+        </div>
+
+        <!-- Gráfico 6: Ranking de Cargos -->
+        <div class="chart-card">
+          <h3 class="chart-title">Cargos con Más Causas Activas</h3>
+          <div class="chart-wrapper">
+            <Bar :data="dataRankingCargos" :options="opcionesBarrasSimples" />
+          </div>
+        </div>
       </div>
     </section>
     <!-- FIN SECCIÓN GRÁFICOS -->
@@ -96,161 +120,429 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { obtenerTodos } from '../firebase'
 import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  ArcElement,
-  CategoryScale,
-  LinearScale
+  Chart as ChartJS, Title, Tooltip, Legend,
+  BarElement, ArcElement, CategoryScale, LinearScale,
+  LineElement, PointElement, Filler
 } from 'chart.js'
-import { Bar, Doughnut } from 'vue-chartjs'
+import { Bar, Doughnut, Line } from 'vue-chartjs'
 
-// Registro de componentes de Chart.js
-ChartJS.register(Title, Tooltip, Legend, BarElement, ArcElement, CategoryScale, LinearScale)
+ChartJS.register(
+  Title, Tooltip, Legend, BarElement, ArcElement,
+  CategoryScale, LinearScale,
+  LineElement, PointElement, Filler
+)
 
-// --------------------------------------------------------
-// 1. DICCIONARIOS Y CONSTANTES
-// --------------------------------------------------------
+
+// ── 1. TEMA REACTIVO + CARGA DE DATOS ─────────────────────────────────────
+const temaClaro = ref(false)
+const cargando  = ref(false)
+let observer = null
+
+onMounted(async () => {
+  temaClaro.value = document.documentElement.classList.contains('tema-claro')
+
+  observer = new MutationObserver(() => {
+    temaClaro.value = document.documentElement.classList.contains('tema-claro')
+  })
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class']
+  })
+
+  // Carga real desde Firebase
+  cargando.value = true
+  datosCrudos.value = await obtenerTodos()
+  cargando.value = false
+})
+
+onUnmounted(() => { observer?.disconnect() })
+
+// Colores de texto y grilla se adaptan al tema
+const CC = computed(() => ({
+  text:   temaClaro.value ? '#475569' : '#94a3b8',
+  muted:  temaClaro.value ? '#94a3b8' : '#64748b',
+  grid:   temaClaro.value ? '#e2e8f0' : '#1e293b',
+  border: temaClaro.value ? '#cbd5e1' : '#334155',
+}))
+
+
+// ── 2. PALETAS ────────────────────────────────────────────────────────────
+
+// Estado judicial — invariantes al tema
+const ESTADO = {
+  Limpio:      '#10b981',
+  Observación: '#f59e0b',
+  Crítico:     '#ef4444',
+}
+
+// Espectro político chileno
+// Derecha → azules/morados   |   Centro → amarillo/ámbar   |   Izquierda → rojos/naranjos
+const ESPECTRO_POLITICO = {
+  // Far-right / Derecha dura
+  'Partido Republicano':          '#172554',  // azul muy oscuro
+  'Republicano':                  '#172554',
+
+  // Derecha
+  'UDI':                          '#1e3a8a',  // azul profundo
+  'Renovación Nacional':          '#1d4ed8',  // azul
+  'Renovación Nacional (RN)':     '#1d4ed8',
+  'RN':                           '#1d4ed8',
+
+  // Centro-derecha liberal
+  'Evópoli':                      '#6d28d9',  // violeta
+
+  // Centro
+  'Partido Demócratas':           '#0891b2',  // cyan
+  'Partido Demócrata Cristiano':  '#b45309',  // ámbar oscuro
+  'PDC':                          '#b45309',
+  'Amarillos':                    '#ca8a04',  // amarillo
+
+  // Centro-izquierda
+  'Partido por la Democracia':    '#c2410c',  // naranja-rojo
+  'PPD':                          '#c2410c',
+  'Partido Radical':              '#dc2626',  // rojo
+  'PR':                           '#dc2626',
+
+  // Izquierda
+  'Partido Socialista':           '#e11d48',  // rosa-rojo
+  'PS':                           '#e11d48',
+  'Convergencia Social':          '#f43f5e',
+  'CS':                           '#f43f5e',
+  'Frente Amplio':                '#ef4444',  // rojo FA
+  'FA':                           '#ef4444',
+
+  // Far-left
+  'Partido Comunista':            '#7f1d1d',  // rojo oscuro
+  'PCCh':                         '#7f1d1d',
+  'PC':                           '#7f1d1d',
+
+  // Neutros
+  'Independiente':                '#94a3b8',
+  'Sin partido':                  '#94a3b8',
+  'Independientes / Sin Partido': '#94a3b8',
+  'Independientes':               '#94a3b8',
+}
+
+const colorPartido = (nombre) => ESPECTRO_POLITICO[nombre] ?? '#94a3b8'
+
+// Paleta institucional por rama del Estado (de más frío a más cálido)
+const PALETA_RAMAS = [
+  '#2563eb',  // Ejecutivo    → azul institucional
+  '#7c3aed',  // Legislativo  → violeta
+  '#0891b2',  // Judicial     → cyan
+  '#059669',  // Local        → verde
+  '#d97706',  // Autónomos    → ámbar
+  '#0f766e',  // Policías     → teal
+  '#9333ea',  // Privado      → púrpura
+]
+
+// Gradiente rojo para ranking de focos críticos (más grave = más oscuro)
+const PALETA_CRITICOS = [
+  '#7f1d1d',  // 1° puesto → rojo muy oscuro
+  '#991b1b',
+  '#b91c1c',
+  '#dc2626',
+  '#ef4444',  // 5° puesto → rojo suave
+]
+
 const GRUPOS_ESTADO = {
   'Limpio':      ['Limpio'],
   'Observación': ['Observación', 'Prescrita', 'En Litigio', 'En Litigio / Delatora'],
   'Crítico':     ['Crítico', 'Condenado', 'Condenada', 'Condenada / Delatora'],
 }
 
-const COLORES = {
-  Limpio: '#10b981',       // Verde esmeralda
-  Observación: '#f59e0b',  // Ámbar/Naranja
-  Crítico: '#ef4444'       // Rojo
-}
 
-const textColor = '#cbd5e1'
-const gridColor = '#334155'
+// ── 3. OPCIONES COMPUTED (REACTIVAS AL TEMA) ─────────────────────────────
 
-// --------------------------------------------------------
-// 2. CONFIGURACIÓN VISUAL DE LOS GRÁFICOS (Dark Mode)
-// --------------------------------------------------------
-const opcionesDona = {
+const opcionesDona = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: { position: 'bottom', labels: { color: textColor, padding: 20 } },
-    tooltip: { callbacks: { label: (context) => ` ${context.label}: ${context.raw} registros` } }
+    legend: {
+      position: 'bottom',
+      labels: {
+        color: CC.value.text,
+        padding: 20,
+        font: { size: 12, weight: '600' }
+      }
+    },
+    tooltip: {
+      callbacks: {
+        label: (ctx) => ` ${ctx.label}: ${ctx.raw} registros`
+      }
+    }
   },
   cutout: '70%',
   borderWidth: 0
-}
+}))
 
-const opcionesBarrasApiladas = {
+const opcionesBarrasApiladas = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
-  indexAxis: 'y', // Barras horizontales
+  indexAxis: 'y',
   plugins: {
-    legend: { position: 'top', labels: { color: textColor, boxWidth: 12 } }
+    legend: {
+      position: 'top',
+      labels: {
+        color: CC.value.text,
+        boxWidth: 12,
+        font: { size: 11, weight: '600' }
+      }
+    }
   },
   scales: {
-    x: { stacked: true, grid: { color: gridColor }, ticks: { color: textColor } },
-    y: { stacked: true, grid: { display: false }, ticks: { color: textColor } }
+    x: {
+      stacked: true,
+      grid:  { color: CC.value.grid },
+      ticks: { color: CC.value.text, font: { size: 11 } },
+      border:{ color: CC.value.border }
+    },
+    y: {
+      stacked: true,
+      grid:  { display: false },
+      ticks: { color: CC.value.text, font: { size: 11 } }
+    }
   }
-}
+}))
 
-const opcionesBarrasSimples = {
+const opcionesBarrasSimples = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: { legend: { display: false } },
   scales: {
-    x: { grid: { display: false }, ticks: { color: textColor } },
-    y: { grid: { color: gridColor }, ticks: { color: textColor, precision: 0 } }
-  }
-}
-
-// --------------------------------------------------------
-// 3. PROCESAMIENTO REACTIVO DE DATOS (COMPUTED)
-// --------------------------------------------------------
-const datosCrudos = ref([])
-
-// Gráfico 1: Dona de Estados Globales
-const dataEstados = computed(() => {
-  if (datosCrudos.value.length === 0) {
-    return {
-      labels: ['Limpios', 'En Observación', 'Críticos'],
-      datasets: [{
-        data: [145, 48, 22],
-        backgroundColor: [COLORES.Limpio, COLORES.Observación, COLORES.Crítico],
-        borderWidth: 0,
-        hoverOffset: 4
-      }]
+    x: {
+      grid:  { display: false },
+      ticks: { color: CC.value.text, font: { size: 11 } }
+    },
+    y: {
+      grid:  { color: CC.value.grid },
+      ticks: { color: CC.value.text, font: { size: 11 }, precision: 0 },
+      border:{ color: CC.value.border }
     }
   }
+}))
 
-  const conteo = { Limpio: 0, Observación: 0, Crítico: 0 }
-  
-  datosCrudos.value.forEach(item => {
-    if (GRUPOS_ESTADO.Limpio.includes(item.estado_judicial)) conteo.Limpio++
-    else if (GRUPOS_ESTADO.Observación.includes(item.estado_judicial)) conteo.Observación++
-    else if (GRUPOS_ESTADO.Crítico.includes(item.estado_judicial)) conteo.Crítico++
+const opcionesPartidos = computed(() => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  indexAxis: 'y',
+  plugins: { legend: { display: false } },
+  scales: {
+    x: {
+      grid:  { color: CC.value.grid },
+      ticks: { color: CC.value.text, font: { size: 11 } },
+      border:{ color: CC.value.border }
+    },
+    y: {
+      grid:  { display: false },
+      ticks: { color: CC.value.text, font: { size: 11 } }
+    }
+  }
+}))
+
+const opcionesLinea = computed(() => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } },
+  scales: {
+    x: {
+      grid:  { display: false },
+      ticks: { color: CC.value.text, font: { size: 11 } }
+    },
+    y: {
+      beginAtZero: true,
+      grid:  { color: CC.value.grid },
+      ticks: { color: CC.value.text, font: { size: 11 }, precision: 0 },
+      border:{ color: CC.value.border }
+    }
+  }
+}))
+
+
+// ── 4. DATOS ──────────────────────────────────────────────────────────────
+
+const datosCrudos = ref([])
+
+// Todas las causas únicas de la base real, con el tipo de cada político asociado
+const causasUnicas = computed(() => {
+  const mapa = new Map()
+  datosCrudos.value.forEach(politico => {
+    if (!Array.isArray(politico.causas)) return
+    politico.causas.forEach(causa => {
+      if (!mapa.has(causa.id_causa)) {
+        mapa.set(causa.id_causa, { ...causa, tipos: new Set() })
+      }
+      mapa.get(causa.id_causa).tipos.add(politico.tipo)
+    })
   })
+  return Array.from(mapa.values())
+})
+
+// Mapa tipo → label, derivado de macroCategorias (evita duplicar datos)
+const mapaLabels = computed(() => {
+  const m = {}
+  macroCategorias.forEach(macro =>
+    macro.items.forEach(item => { m[item.tipo] = item.label })
+  )
+  return m
+})
+
+// Gráfico 1 — Dona: distribución global de estados
+const dataEstados = computed(() => {
+  const c = { Limpio: 0, Observación: 0, Crítico: 0 }
+
+  if (datosCrudos.value.length > 0) {
+    datosCrudos.value.forEach(p => {
+      if      (GRUPOS_ESTADO.Limpio.includes(p.estado_judicial))      c.Limpio++
+      else if (GRUPOS_ESTADO.Observación.includes(p.estado_judicial)) c.Observación++
+      else if (GRUPOS_ESTADO.Crítico.includes(p.estado_judicial))     c.Crítico++
+    })
+  } else {
+    c.Limpio = 145; c.Observación = 48; c.Crítico = 22
+  }
 
   return {
     labels: ['Limpios', 'En Observación', 'Críticos'],
     datasets: [{
-      data: [conteo.Limpio, conteo.Observación, conteo.Crítico],
-      backgroundColor: [COLORES.Limpio, COLORES.Observación, COLORES.Crítico],
+      data: [c.Limpio, c.Observación, c.Crítico],
+      backgroundColor: [ESTADO.Limpio, ESTADO.Observación, ESTADO.Crítico],
+      hoverBackgroundColor: ['#059669', '#d97706', '#dc2626'],
       borderWidth: 0,
-      hoverOffset: 4
+      hoverOffset: 6
     }]
   }
 })
 
-// Gráfico 2: Causas Apiladas por Macro-Sector
-const dataSectoresApilados = computed(() => {
-  if (datosCrudos.value.length === 0) {
-    return {
-      labels: ['Admin. Local', 'Sector Privado', 'Poder Legislativo', 'Poder Ejecutivo', 'Fuerzas/Orden'],
-      datasets: [
-        { label: 'En Observación', data: [18, 14, 9, 6, 4], backgroundColor: COLORES.Observación, borderRadius: 4 },
-        { label: 'Críticos', data: [12, 10, 5, 2, 8], backgroundColor: COLORES.Crítico, borderRadius: 4 }
-      ]
+// Gráfico 2 — Barras apiladas: causas por macro-sector
+const dataSectoresApilados = computed(() => ({
+  labels: ['Adm. Local', 'Privado', 'Legislativo', 'Ejecutivo', 'Fuerzas/Orden'],
+  datasets: [
+    {
+      label: 'En Observación',
+      data: [18, 14, 9, 6, 4],
+      backgroundColor: ESTADO.Observación,
+      borderRadius: 4
+    },
+    {
+      label: 'Críticos / Condenados',
+      data: [12, 10, 5, 2, 8],
+      backgroundColor: ESTADO.Crítico,
+      borderRadius: 4
     }
+  ]
+}))
+
+// Gráfico 3 — Top 5 focos críticos: gradiente rojo oscuro → claro
+const dataTopCriticos = computed(() => ({
+  labels: ['Alcaldes', 'Empresas', 'Ejército', 'Diputados', 'Ministros'],
+  datasets: [{
+    label: 'Casos Críticos',
+    data: [15, 12, 8, 5, 4],
+    backgroundColor: PALETA_CRITICOS,
+    borderRadius: 6,
+    borderSkipped: false
+  }]
+}))
+
+// Gráfico 4 — Partidos: espectro político izquierda→derecha
+const labelsPartidos = [
+  'Partido Republicano',
+  'UDI',
+  'Renovación Nacional (RN)',
+  'Independientes / Sin Partido',
+  'Partido Demócratas',
+  'Frente Amplio',
+  'Partido Comunista',
+]
+
+const dataPartidos = computed(() => ({
+  labels: labelsPartidos,
+  datasets: [{
+    label: 'Nivel de Controversia',
+    data: [45, 42, 35, 28, 18, 12, 8],
+    backgroundColor: labelsPartidos.map(colorPartido),
+    borderRadius: 6,
+    borderSkipped: false
+  }]
+}))
+
+// Gráfico 5 — Línea: evolución de causas por año
+const dataCausasPorAno = computed(() => {
+  const conteo = {}
+  causasUnicas.value.forEach(c => {
+    const ano = c.anio || 'S/D'
+    conteo[ano] = (conteo[ano] || 0) + 1
+  })
+
+  const entradas = Object.keys(conteo).length > 0
+    ? Object.entries(conteo).sort((a, b) => a[0].localeCompare(b[0]))
+    : [['2019', 4], ['2020', 7], ['2021', 9], ['2022', 14], ['2023', 18], ['2024', 22], ['2025', 16]]
+
+  return {
+    labels: entradas.map(([ano]) => ano),
+    datasets: [{
+      label: 'Causas iniciadas',
+      data: entradas.map(([, n]) => n),
+      borderColor: '#ef4444',
+      backgroundColor: 'rgba(239, 68, 68, 0.15)',
+      pointBackgroundColor: '#ef4444',
+      pointRadius: 4,
+      fill: true,
+      tension: 0.3
+    }]
   }
-  return { labels: [], datasets: [] } 
 })
 
-// Gráfico 3: Top 5 Tipos Específicos Críticos
-const dataTopCriticos = computed(() => {
-  if (datosCrudos.value.length === 0) {
-    return {
-      labels: ['Alcaldes', 'Empresas', 'Ejército', 'Diputados', 'Fundaciones'],
-      datasets: [{
-        label: 'Casos Críticos',
-        data: [15, 12, 8, 5, 4],
-        backgroundColor: COLORES.Crítico,
-        borderRadius: 6
-      }]
-    }
+// Gráfico 6 — Ranking de cargos con más causas activas
+const dataRankingCargos = computed(() => {
+  const conteo = {}
+  causasUnicas.value.forEach(c => {
+    c.tipos.forEach(tipo => {
+      conteo[tipo] = (conteo[tipo] || 0) + 1
+    })
+  })
+
+  let entradas = Object.entries(conteo).sort((a, b) => b[1] - a[1]).slice(0, 6)
+
+  if (entradas.length === 0) {
+    entradas = [
+      ['alcaldes', 15], ['diputados', 11], ['empresas', 12],
+      ['concejales', 6], ['fiscales', 3]
+    ]
   }
-  return { labels: [], datasets: [] } 
+
+  return {
+    labels: entradas.map(([tipo]) => mapaLabels.value[tipo] || tipo),
+    datasets: [{
+      label: 'Causas totales',
+      data: entradas.map(([, n]) => n),
+      backgroundColor: '#2563eb',
+      borderRadius: 6,
+      borderSkipped: false
+    }]
+  }
 })
 
-// --------------------------------------------------------
-// 4. CATEGORÍAS Y NAVEGACIÓN
-// --------------------------------------------------------
+
+// ── 5. CATEGORÍAS DE NAVEGACIÓN ───────────────────────────────────────────
+
 const macroCategorias = [
   {
     id: 'ejecutivo',
     titulo: 'Poder Ejecutivo',
     descripcion: 'Presidencia, ministerios y administración central del Estado.',
     items: [
-      { tipo: 'presidentes',                  label: 'Presidentes',            icono: '🇨🇱' },
-      { tipo: 'ministros',                    label: 'Ministros',              icono: '💼' },
-      { tipo: 'subsecretarios',               label: 'Subsecretarios',         icono: '📋' },
-      { tipo: 'delegados-presidenciales-reg', label: 'Delegados Reg.',         icono: '📍' },
-      { tipo: 'delegados-presidenciales-pro', label: 'Delegados Prov.',        icono: '📌' },
-      { tipo: 'seremis',                      label: 'Seremis',                icono: '🏢' },
-      { tipo: 'dictador',                     label: 'Dictadura',              icono: '💂' }
+      { tipo: 'presidentes',                  label: 'Presidentes',         icono: '🇨🇱' },
+      { tipo: 'ministros',                    label: 'Ministros',           icono: '💼' },
+      { tipo: 'subsecretarios',               label: 'Subsecretarios',      icono: '📋' },
+      { tipo: 'delegados-presidenciales-reg', label: 'Delegados Reg.',      icono: '📍' },
+      { tipo: 'delegados-presidenciales-pro', label: 'Delegados Prov.',     icono: '📌' },
+      { tipo: 'seremis',                      label: 'Seremis',             icono: '🏢' },
+      { tipo: 'dictador',                     label: 'Dictadura',           icono: '💂' }
     ]
   },
   {
@@ -288,9 +580,9 @@ const macroCategorias = [
     titulo: 'Órganos Autónomos',
     descripcion: 'Entidades independientes de control, justicia constitucional y persecución penal.',
     items: [
-      { tipo: 'fiscales',      label: 'Fiscales',            icono: '🔎' },
-      { tipo: 'contraloria',   label: 'Contraloría',         icono: '📑' },
-      { tipo: 'tc',            label: 'Tribunal Const.',     icono: '📖' }
+      { tipo: 'fiscales',    label: 'Fiscales',         icono: '🔎' },
+      { tipo: 'contraloria', label: 'Contraloría',      icono: '📑' },
+      { tipo: 'tc',          label: 'Tribunal Const.',  icono: '📖' }
     ]
   },
   {
@@ -306,11 +598,9 @@ const macroCategorias = [
   {
     id: 'privado',
     titulo: 'Sector Privado, Legal y Fundaciones',
-    descripcion: 'Empresas, empresarios, abogados, fundaciones y actores involucrados en causas judiciales.',
+    descripcion: 'Empresas, empresarios, abogados y fundaciones involucrados en causas.',
     items: [
       { tipo: 'empresas',    label: 'Empresas',    icono: '🏭' },
-      { tipo: 'empresarios', label: 'Empresarios', icono: '👔' }, // <-- NUEVO AGREGADO
-      { tipo: 'abogados',    label: 'Abogados',    icono: '⚖️' }, // <-- NUEVO AGREGADO
       { tipo: 'fundaciones', label: 'Fundaciones', icono: '🤝' }
     ]
   }

@@ -231,8 +231,8 @@ const categorias = [
   { tipo: 'pdi',                          label: 'PDI' },
   { tipo: 'ejercito',                     label: 'Ejército' },
   { tipo: 'empresas',                     label: 'Empresas' },
-  { tipo: 'empresarios',                  label: 'Empresarios' }, // <-- NUEVO
-  { tipo: 'abogados',                     label: 'Abogados' },    // <-- NUEVO
+  { tipo: 'empresarios',                  label: 'Empresarios' },
+  { tipo: 'abogados',                     label: 'Abogados' },
   { tipo: 'fundaciones',                  label: 'Fundaciones' },
 ]
 
