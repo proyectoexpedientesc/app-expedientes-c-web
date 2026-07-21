@@ -191,30 +191,34 @@ const TIPOS_POLITICOS = [
 
 // ── Espectro político chileno: lista canónica ORDENADA izquierda → derecha ──
 // id: usado para intentar cruzar con politico.id_partido
+// sigla: se usa en el eje del gráfico cuando el nombre tiene más de una palabra
 // aliases: variantes de texto que pueden venir en politico.partido_actual
 const PARTIDOS_CONFIG = [
-  { id: 'rd',            nombre: 'Revolución Democrática',      color: '#fb7185', aliases: ['revolución democrática', 'revolución democrática (expulsado)', 'rd'] },
-  { id: 'pc',            nombre: 'Partido Comunista',           color: '#7f1d1d', aliases: ['partido comunista', 'partido comunista de chile', 'pcch', 'pc'] },
-  { id: 'fa',             nombre: 'Frente Amplio',               color: '#ef4444', aliases: ['frente amplio', 'fa'] },
-  { id: 'cs',             nombre: 'Convergencia Social',         color: '#f43f5e', aliases: ['convergencia social', 'cs'] },
-  { id: 'ps',             nombre: 'Partido Socialista',          color: '#e11d48', aliases: ['partido socialista', 'ps'] },
-  { id: 'pev',           nombre: 'Partido Ecologista Verde',    color: '#16a34a', aliases: ['partido ecologista verde', 'pev'] },
-  { id: 'frevs',         nombre: 'Federación Regionalista Verde Social', color: '#15803d', aliases: ['federación regionalista verde social', 'frevs'] },
-  { id: 'pr',             nombre: 'Partido Radical',             color: '#dc2626', aliases: ['partido radical', 'pr'] },
-  { id: 'ppd',            nombre: 'Partido por la Democracia',   color: '#c2410c', aliases: ['partido por la democracia', 'ppd'] },
-  { id: 'pdc',            nombre: 'Partido Demócrata Cristiano', color: '#b45309', aliases: ['partido demócrata cristiano', 'pdc'] },
-  { id: 'ah',            nombre: 'Acción Humanista',             color: '#a16207', aliases: ['acción humanista', 'ah'] },
-  { id: 'amarillos',      nombre: 'Amarillos',                   color: '#ca8a04', aliases: ['amarillos'] },
-  { id: 'democratas',     nombre: 'Partido Demócratas',          color: '#0891b2', aliases: ['partido demócratas', 'demócratas'] },
-  { id: 'evopoli',        nombre: 'Evópoli',                     color: '#6d28d9', aliases: ['evópoli', 'evopoli'] },
-  { id: 'pdg',           nombre: 'Partido de la Gente',          color: '#0284c7', aliases: ['partido de la gente', 'pdg'] },
-  { id: 'rn',             nombre: 'Renovación Nacional (RN)',    color: '#1d4ed8', aliases: ['renovación nacional', 'renovación nacional (rn)', 'rn'] },
-  { id: 'liberal',       nombre: 'Partido Liberal de Chile',    color: '#2563eb', aliases: ['partido liberal de chile', 'partido liberal', 'liberal'] },
-  { id: 'udi',            nombre: 'UDI',                         color: '#1e3a8a', aliases: ['udi'] },
-  { id: 'republicano',    nombre: 'Partido Republicano',         color: '#172554', aliases: ['partido republicano', 'republicano'] },
-  { id: 'pnl',           nombre: 'Partido Nacional Libertario',  color: '#334155', aliases: ['partido nacional libertario', 'pnl'] },
-  { id: 'independiente',  nombre: 'Independientes',              color: '#94a3b8', aliases: ['independiente', 'independientes'] },
+  { id: 'rd',            nombre: 'Revolución Democrática',      sigla: 'RD',    color: '#fb7185', aliases: ['revolución democrática', 'revolución democrática (expulsado)', 'rd'] },
+  { id: 'pc',            nombre: 'Partido Comunista',           sigla: 'PC',    color: '#7f1d1d', aliases: ['partido comunista', 'partido comunista de chile', 'pcch', 'pc'] },
+  { id: 'fa',             nombre: 'Frente Amplio',               sigla: 'FA',    color: '#ef4444', aliases: ['frente amplio', 'fa'] },
+  { id: 'cs',             nombre: 'Convergencia Social',         sigla: 'CS',    color: '#f43f5e', aliases: ['convergencia social', 'cs'] },
+  { id: 'ps',             nombre: 'Partido Socialista',          sigla: 'PS',    color: '#e11d48', aliases: ['partido socialista', 'ps'] },
+  { id: 'pev',           nombre: 'Partido Ecologista Verde',    sigla: 'PEV',   color: '#16a34a', aliases: ['partido ecologista verde', 'pev'] },
+  { id: 'frevs',         nombre: 'Federación Regionalista Verde Social', sigla: 'FREVS', color: '#15803d', aliases: ['federación regionalista verde social', 'frevs'] },
+  { id: 'pr',             nombre: 'Partido Radical',             sigla: 'PR',    color: '#dc2626', aliases: ['partido radical', 'pr'] },
+  { id: 'ppd',            nombre: 'Partido por la Democracia',   sigla: 'PPD',   color: '#c2410c', aliases: ['partido por la democracia', 'ppd'] },
+  { id: 'pdc',            nombre: 'Partido Demócrata Cristiano', sigla: 'PDC',   color: '#b45309', aliases: ['partido demócrata cristiano', 'pdc'] },
+  { id: 'ah',            nombre: 'Acción Humanista',             sigla: 'AH',    color: '#a16207', aliases: ['acción humanista', 'ah'] },
+  { id: 'amarillos',      nombre: 'Amarillos',                   sigla: 'AM',    color: '#ca8a04', aliases: ['amarillos'] },
+  { id: 'democratas',     nombre: 'Partido Demócratas',          sigla: 'PD',    color: '#0891b2', aliases: ['partido demócratas', 'demócratas'] },
+  { id: 'evopoli',        nombre: 'Evópoli',                     sigla: 'EVO',    color: '#6d28d9', aliases: ['evópoli', 'evopoli'] },
+  { id: 'pdg',           nombre: 'Partido de la Gente',          sigla: 'PDG',   color: '#0284c7', aliases: ['partido de la gente', 'pdg'] },
+  { id: 'rn',             nombre: 'Renovación Nacional',          sigla: 'RN',    color: '#1d4ed8', aliases: ['renovación nacional', 'renovación nacional (rn)', 'rn'] },
+  { id: 'liberal',       nombre: 'Partido Liberal de Chile',      sigla: 'PL',    color: '#2563eb', aliases: ['partido liberal de chile', 'partido liberal', 'liberal'] },
+  { id: 'udi',            nombre: 'Unión Demócrata Independiente',  sigla: 'UDI',    color: '#1e3a8a', aliases: ['udi'] },
+  { id: 'republicano',    nombre: 'Partido Republicano',         sigla: 'REP',   color: '#172554', aliases: ['partido republicano', 'republicano'] },
+  { id: 'pnl',           nombre: 'Partido Nacional Libertario',  sigla: 'PNL',   color: '#334155', aliases: ['partido nacional libertario', 'pnl'] },
+  { id: 'independiente',  nombre: 'Independientes',              sigla: 'IND',    color: '#94a3b8', aliases: ['independiente', 'independientes'] },
 ]
+
+// Si el nombre tiene más de una palabra, usa la sigla (si existe); si no, el nombre completo
+const nombreParaMostrar = (p) => p.sigla || p.nombre
 
 // Marcadores de "sin dato de partido" — estos se EXCLUYEN del todo, no cuentan en ningún lado
 const SIN_PARTIDO_MARCADORES = ['', 'sin partido', 'sin información', 'sin info', 's/i', 'n/a', 'sin datos']
@@ -353,11 +357,23 @@ const opcionesBarrasSimples = computed(() => ({
   }
 }))
 
+// Única declaración de opcionesPartidos — incluye el tooltip que muestra el nombre completo
 const opcionesPartidos = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   indexAxis: 'y',
-  plugins: { legend: { display: false } },
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        title: (items) => {
+          const idx = items[0].dataIndex
+          const nombres = items[0].dataset.nombresCompletos
+          return nombres ? nombres[idx] : items[0].label
+        }
+      }
+    }
+  },
   scales: {
     x: {
       grid:  { color: CC.value.grid },
@@ -479,15 +495,16 @@ const dataTopCriticos = computed(() => ({
 // Solo considera cargos políticos (TIPOS_POLITICOS), excluye sector privado/técnico/judicial/orden.
 // Excluye del todo a quienes no tienen partido (vacío / "sin partido"), pero conserva
 // "Independientes" como categoría propia si tiene casos reales.
+// Muestra sigla en vez de nombre completo cuando el nombre tiene más de una palabra.
 const dataPartidos = computed(() => {
-  const conteo = {}   // id_partido → cantidad
+  const conteo = {}
   PARTIDOS_CONFIG.forEach(p => { conteo[p.id] = 0 })
 
   datosCrudos.value.forEach(politico => {
-    if (!TIPOS_POLITICOS.includes(politico.tipo)) return   // solo cargos políticos
+    if (!TIPOS_POLITICOS.includes(politico.tipo)) return
 
     const idPartido = resolverIdPartido(politico)
-    if (!idPartido) return   // sin partido / marcador "sin partido" → excluido del todo
+    if (!idPartido) return
 
     const esObservacion = GRUPOS_ESTADO.Observación.includes(politico.estado_judicial)
     const esCritico      = GRUPOS_ESTADO.Crítico.includes(politico.estado_judicial)
@@ -497,20 +514,25 @@ const dataPartidos = computed(() => {
     }
   })
 
-  // Armar entradas, omitir partidos sin casos reales, ordenar descendente
   const entradas = PARTIDOS_CONFIG
-    .map(p => ({ nombre: p.nombre, cantidad: conteo[p.id], color: p.color }))
+    .map(p => ({
+      nombreCompleto: p.nombre,
+      etiqueta: nombreParaMostrar(p),
+      cantidad: conteo[p.id],
+      color: p.color
+    }))
     .filter(e => e.cantidad > 0)
     .sort((a, b) => b.cantidad - a.cantidad)
 
   return {
-    labels: entradas.map(e => e.nombre),
+    labels: entradas.map(e => e.etiqueta),
     datasets: [{
       label: 'Políticos en Observación o Crítico',
       data: entradas.map(e => e.cantidad),
       backgroundColor: entradas.map(e => e.color),
       borderRadius: 6,
-      borderSkipped: false
+      borderSkipped: false,
+      nombresCompletos: entradas.map(e => e.nombreCompleto)
     }]
   }
 })
