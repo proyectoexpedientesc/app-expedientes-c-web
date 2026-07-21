@@ -179,25 +179,45 @@ const ESTADO = {
   Crítico:     '#ef4444',
 }
 
+// Tipos que corresponden a cargos políticos con afiliación partidaria real.
+// Excluye: fuerzas armadas/orden, poder judicial, órganos técnicos autónomos,
+// y sector privado (empresas, empresarios, abogados, fundaciones).
+const TIPOS_POLITICOS = [
+  'presidentes', 'ministros', 'subsecretarios',
+  'delegados-presidenciales-reg', 'delegados-presidenciales-pro', 'seremis',
+  'senadores', 'diputados',
+  'gobernadores', 'consejeros', 'alcaldes', 'concejales',
+]
+
 // ── Espectro político chileno: lista canónica ORDENADA izquierda → derecha ──
 // id: usado para intentar cruzar con politico.id_partido
 // aliases: variantes de texto que pueden venir en politico.partido_actual
 const PARTIDOS_CONFIG = [
-  { id: 'pc',            nombre: 'Partido Comunista',           color: '#7f1d1d', aliases: ['partido comunista', 'pcch', 'pc'] },
+  { id: 'rd',            nombre: 'Revolución Democrática',      color: '#fb7185', aliases: ['revolución democrática', 'revolución democrática (expulsado)', 'rd'] },
+  { id: 'pc',            nombre: 'Partido Comunista',           color: '#7f1d1d', aliases: ['partido comunista', 'partido comunista de chile', 'pcch', 'pc'] },
   { id: 'fa',             nombre: 'Frente Amplio',               color: '#ef4444', aliases: ['frente amplio', 'fa'] },
   { id: 'cs',             nombre: 'Convergencia Social',         color: '#f43f5e', aliases: ['convergencia social', 'cs'] },
   { id: 'ps',             nombre: 'Partido Socialista',          color: '#e11d48', aliases: ['partido socialista', 'ps'] },
+  { id: 'pev',           nombre: 'Partido Ecologista Verde',    color: '#16a34a', aliases: ['partido ecologista verde', 'pev'] },
+  { id: 'frevs',         nombre: 'Federación Regionalista Verde Social', color: '#15803d', aliases: ['federación regionalista verde social', 'frevs'] },
   { id: 'pr',             nombre: 'Partido Radical',             color: '#dc2626', aliases: ['partido radical', 'pr'] },
   { id: 'ppd',            nombre: 'Partido por la Democracia',   color: '#c2410c', aliases: ['partido por la democracia', 'ppd'] },
   { id: 'pdc',            nombre: 'Partido Demócrata Cristiano', color: '#b45309', aliases: ['partido demócrata cristiano', 'pdc'] },
+  { id: 'ah',            nombre: 'Acción Humanista',             color: '#a16207', aliases: ['acción humanista', 'ah'] },
   { id: 'amarillos',      nombre: 'Amarillos',                   color: '#ca8a04', aliases: ['amarillos'] },
   { id: 'democratas',     nombre: 'Partido Demócratas',          color: '#0891b2', aliases: ['partido demócratas', 'demócratas'] },
   { id: 'evopoli',        nombre: 'Evópoli',                     color: '#6d28d9', aliases: ['evópoli', 'evopoli'] },
+  { id: 'pdg',           nombre: 'Partido de la Gente',          color: '#0284c7', aliases: ['partido de la gente', 'pdg'] },
   { id: 'rn',             nombre: 'Renovación Nacional (RN)',    color: '#1d4ed8', aliases: ['renovación nacional', 'renovación nacional (rn)', 'rn'] },
+  { id: 'liberal',       nombre: 'Partido Liberal de Chile',    color: '#2563eb', aliases: ['partido liberal de chile', 'partido liberal', 'liberal'] },
   { id: 'udi',            nombre: 'UDI',                         color: '#1e3a8a', aliases: ['udi'] },
   { id: 'republicano',    nombre: 'Partido Republicano',         color: '#172554', aliases: ['partido republicano', 'republicano'] },
-  { id: 'independiente',  nombre: 'Independientes / Sin Partido',color: '#94a3b8', aliases: ['independiente', 'sin partido', 'independientes', 'independientes / sin partido'] },
+  { id: 'pnl',           nombre: 'Partido Nacional Libertario',  color: '#334155', aliases: ['partido nacional libertario', 'pnl'] },
+  { id: 'independiente',  nombre: 'Independientes',              color: '#94a3b8', aliases: ['independiente', 'independientes'] },
 ]
+
+// Marcadores de "sin dato de partido" — estos se EXCLUYEN del todo, no cuentan en ningún lado
+const SIN_PARTIDO_MARCADORES = ['', 'sin partido', 'sin información', 'sin info', 's/i', 'n/a', 'sin datos']
 
 // Mapa rápido alias(normalizado) → id canónico, construido desde PARTIDOS_CONFIG
 const ALIAS_A_ID = PARTIDOS_CONFIG.reduce((acc, p) => {
@@ -207,14 +227,28 @@ const ALIAS_A_ID = PARTIDOS_CONFIG.reduce((acc, p) => {
 
 const normalizar = (txt) => (txt || '').toString().trim().toLowerCase()
 
-// Resuelve el id canónico de partido de un político: primero por id_partido, luego por nombre
+// Resuelve el id canónico de partido de un político: primero por id_partido, luego por nombre.
+// Devuelve null si no tiene partido (vacío o marcado como "sin partido"), excluyéndolo del gráfico.
 const resolverIdPartido = (politico) => {
   if (politico.id_partido) {
     const idNorm = normalizar(politico.id_partido)
     if (PARTIDOS_CONFIG.some(p => p.id === idNorm)) return idNorm
   }
+
   const nombreNorm = normalizar(politico.partido_actual)
-  return ALIAS_A_ID[nombreNorm] || null
+
+  // Si el campo está vacío o es un marcador de "sin partido", excluir del todo
+  if (SIN_PARTIDO_MARCADORES.includes(nombreNorm)) return null
+
+  // Match exacto por alias
+  if (ALIAS_A_ID[nombreNorm]) return ALIAS_A_ID[nombreNorm]
+
+  // Fallback: cualquier variante que mencione "independiente"
+  // (ej. "Independiente (Pro UDI)", "Militar / Independiente") cae en Independientes
+  if (nombreNorm.includes('independiente')) return 'independiente'
+
+  // No matcheó ningún partido conocido ni patrón de independiente
+  return null
 }
 
 const colorPartido = (nombre) => {
@@ -332,7 +366,7 @@ const opcionesPartidos = computed(() => ({
     },
     y: {
       grid:  { display: false },
-      ticks: { color: CC.value.text, font: { size: 11 }, autoSkip: false }  // ← agregado
+      ticks: { color: CC.value.text, font: { size: 11 }, autoSkip: false }
     }
   }
 }))
@@ -441,41 +475,33 @@ const dataTopCriticos = computed(() => ({
   }]
 }))
 
-// Gráfico 4 — Partidos: cantidad de políticos en Crítico + Observación (ordenado por cantidad)
+// Gráfico 4 — Partidos: cantidad de políticos en Crítico + Observación (ordenado descendente)
+// Solo considera cargos políticos (TIPOS_POLITICOS), excluye sector privado/técnico/judicial/orden.
+// Excluye del todo a quienes no tienen partido (vacío / "sin partido"), pero conserva
+// "Independientes" como categoría propia si tiene casos reales.
 const dataPartidos = computed(() => {
   const conteo = {}   // id_partido → cantidad
   PARTIDOS_CONFIG.forEach(p => { conteo[p.id] = 0 })
 
-  let huboDatos = false
-
   datosCrudos.value.forEach(politico => {
+    if (!TIPOS_POLITICOS.includes(politico.tipo)) return   // solo cargos políticos
+
     const idPartido = resolverIdPartido(politico)
-    if (!idPartido) return
+    if (!idPartido) return   // sin partido / marcador "sin partido" → excluido del todo
 
     const esObservacion = GRUPOS_ESTADO.Observación.includes(politico.estado_judicial)
     const esCritico      = GRUPOS_ESTADO.Crítico.includes(politico.estado_judicial)
 
     if (esObservacion || esCritico) {
       conteo[idPartido]++
-      huboDatos = true
     }
   })
 
-  // Fallback de ejemplo si aún no hay datos cargados / ningún match
-  if (!huboDatos) {
-    conteo.republicano = 45
-    conteo.udi = 42
-    conteo.rn = 35
-    conteo.independiente = 28
-    conteo.democratas = 18
-    conteo.fa = 12
-    conteo.pc = 8
-  }
-
-  // Armar entradas completas y ORDENAR por cantidad descendente
+  // Armar entradas, omitir partidos sin casos reales, ordenar descendente
   const entradas = PARTIDOS_CONFIG
     .map(p => ({ nombre: p.nombre, cantidad: conteo[p.id], color: p.color }))
-    .sort((a, b) => b.cantidad - a.cantidad)   // ← descendente: el de más casos primero
+    .filter(e => e.cantidad > 0)
+    .sort((a, b) => b.cantidad - a.cantidad)
 
   return {
     labels: entradas.map(e => e.nombre),
