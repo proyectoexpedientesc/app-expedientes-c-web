@@ -15,9 +15,12 @@
             Registro de autoridades, instituciones de orden y actores privados.
           </p>
 
-          <div class="hero-actions">
+          <div class="hero-actions hero-actions-separadas">
             <router-link to="/causas" class="action-btn primary-btn">
               🕸️ Ver Mapa de Redes Judiciales
+            </router-link>
+            <router-link to="/partidos" class="action-btn primary-btn">
+              🏛️ Ver Partidos Políticos
             </router-link>
           </div>
         </div>

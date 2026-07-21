@@ -44,6 +44,17 @@ const router = createRouter({
       component: CausasView,
     },
     {
+      path: '/partidos',
+      name: 'partidos',
+      component: () => import('../views/PartidosView.vue')
+    },
+    {
+      path: '/partidos/:id',
+      name: 'detalle-partido',
+      component: () => import('../views/DetallePartidoView.vue'),
+      props: true
+    },
+    {
       path: '/transparencia',
       name: 'transparencia',
       component: TransparencyPolicy,

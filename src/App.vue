@@ -50,6 +50,7 @@ const toggleMenu = () => { menuAbierto.value = !menuAbierto.value }
       <!-- Menú desktop (ahora SOLO contiene los links) -->
       <div class="navbar-menu">
         <router-link to="/causas" class="nav-item">🕸️ Mapa Judicial</router-link>
+        <router-link to="/partidos" class="nav-item">🏛️ Partidos</router-link>
         <router-link to="/transparencia" class="nav-item nav-item-accent">Transparencia</router-link>
       </div>
 
@@ -80,6 +81,7 @@ const toggleMenu = () => { menuAbierto.value = !menuAbierto.value }
     <div class="mobile-menu" :class="{ visible: menuAbierto }">
       <router-link to="/" class="mobile-item">🏠 Inicio</router-link>
       <router-link to="/causas" class="mobile-item">🕸️ Mapa Judicial</router-link>
+      <router-link to="/partidos" class="mobile-item">🏛️ Partidos</router-link>
       <router-link to="/transparencia" class="mobile-item mobile-item-accent">Transparencia</router-link>
     </div>
   </nav>
