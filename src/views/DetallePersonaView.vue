@@ -191,6 +191,14 @@ const LABELS = {
   'fiscales':                     'Fiscales',
   'contraloria':                  'Contraloría',
   'tc':                           'Tribunal Constitucional',
+  // --- NUEVAS CATEGORÍAS ---
+  'candidatos':                   'Candidatos',
+  'dirigentes':                   'Dirigentes',
+  'asesores':                     'Asesores',
+  'proveedores':                  'Proveedores',
+  'corporaciones':                'Corporaciones',
+  'funcionarios':                 'Funcionarios',
+  'partidos':                     'Partidos'
 }
 
 const tipoLabel = computed(() => LABELS[props.tipo] ?? props.tipo)

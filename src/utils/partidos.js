@@ -6,6 +6,8 @@ export const TIPOS_POLITICOS = [
   'delegados-presidenciales-reg', 'delegados-presidenciales-pro', 'seremis',
   'senadores', 'diputados',
   'gobernadores', 'consejeros', 'alcaldes', 'concejales',
+  // --- AÑADIDOS: Entorno Político y Electoral ---
+  'candidatos', 'dirigentes', 'asesores'
 ]
 
 // ── Espectro político chileno: lista canónica ORDENADA izquierda → derecha ──
@@ -26,14 +28,14 @@ export const PARTIDOS_CONFIG = [
   { id: 'ppd',      nombre: 'Partido por la Democracia',       sigla: 'PPD',   color: '#c2410c', logo: '/logos/ppd.png',          aliases: ['partido por la democracia', 'ppd'] },
   { id: 'pdc',      nombre: 'Partido Demócrata Cristiano',     sigla: 'PDC',   color: '#b45309', logo: '/logos/pdc.png',          aliases: ['partido demócrata cristiano', 'pdc'] },
   { id: 'ah',       nombre: 'Acción Humanista',                sigla: 'AH',    color: '#a16207', logo: '/logos/ah.png',           aliases: ['acción humanista', 'ah'] },
-  { id: 'am',       nombre: 'Amarillos',                       sigla: 'AM',    color: '#ca8a04', logo: '/logos/am.png',    aliases: ['amarillos'] },
-  { id: 'pd',       nombre: 'Partido Demócratas',              sigla: 'PD',    color: '#0891b2', logo: '/logos/pd.png',   aliases: ['partido demócratas', 'demócratas'] },
-  { id: 'evo',      nombre: 'Evópoli',                         sigla: 'EVO',   color: '#6d28d9', logo: '/logos/evo.png',      aliases: ['evópoli', 'evopoli'] },
+  { id: 'am',       nombre: 'Amarillos',                       sigla: 'AM',    color: '#ca8a04', logo: '/logos/am.png',           aliases: ['amarillos'] },
+  { id: 'pd',       nombre: 'Partido Demócratas',              sigla: 'PD',    color: '#0891b2', logo: '/logos/pd.png',           aliases: ['partido demócratas', 'demócratas'] },
+  { id: 'evo',      nombre: 'Evópoli',                         sigla: 'EVO',   color: '#6d28d9', logo: '/logos/evo.png',          aliases: ['evópoli', 'evopoli'] },
   { id: 'pdg',      nombre: 'Partido de la Gente',              sigla: 'PDG',   color: '#0284c7', logo: '/logos/pdg.png',          aliases: ['partido de la gente', 'pdg'] },
   { id: 'rn',       nombre: 'Renovación Nacional',              sigla: 'RN',    color: '#1d4ed8', logo: '/logos/rn.png',           aliases: ['renovación nacional', 'renovación nacional (rn)', 'rn'] },
-  { id: 'pl',       nombre: 'Partido Liberal de Chile',         sigla: 'PL',    color: '#2563eb', logo: '/logos/pl.png',      aliases: ['partido liberal de chile', 'partido liberal', 'liberal'] },
+  { id: 'pl',       nombre: 'Partido Liberal de Chile',         sigla: 'PL',    color: '#2563eb', logo: '/logos/pl.png',           aliases: ['partido liberal de chile', 'partido liberal', 'liberal'] },
   { id: 'udi',      nombre: 'Unión Demócrata Independiente',    sigla: 'UDI',   color: '#1e3a8a', logo: '/logos/udi.png',          aliases: ['udi'] },
-  { id: 'rep',      nombre: 'Partido Republicano',              sigla: 'REP',   color: '#172554', logo: '/logos/rep.png',  aliases: ['partido republicano', 'republicano'] },
+  { id: 'rep',      nombre: 'Partido Republicano',              sigla: 'REP',   color: '#172554', logo: '/logos/rep.png',          aliases: ['partido republicano', 'republicano'] },
   { id: 'pnl',      nombre: 'Partido Nacional Libertario',      sigla: 'PNL',   color: '#334155', logo: '/logos/pnl.png',          aliases: ['partido nacional libertario', 'pnl'] },
   { id: 'ind',      nombre: 'Independientes',                  sigla: 'IND',   color: '#94a3b8', logo: null,                      aliases: ['independiente', 'independientes'] },
 ]

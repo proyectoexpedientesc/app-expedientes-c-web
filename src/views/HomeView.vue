@@ -190,6 +190,8 @@ const TIPOS_POLITICOS = [
   'delegados-presidenciales-reg', 'delegados-presidenciales-pro', 'seremis',
   'senadores', 'diputados',
   'gobernadores', 'consejeros', 'alcaldes', 'concejales',
+  // --- AÑADIDOS ---
+  'candidatos', 'dirigentes', 'asesores'
 ]
 
 // ── Espectro político chileno: lista canónica ORDENADA izquierda → derecha ──
@@ -612,6 +614,7 @@ const macroCategorias = [
       { tipo: 'delegados-presidenciales-reg', label: 'Delegados Reg.',      icono: '📍' },
       { tipo: 'delegados-presidenciales-pro', label: 'Delegados Prov.',     icono: '📌' },
       { tipo: 'seremis',                      label: 'Seremis',             icono: '🏢' },
+      { tipo: 'funcionarios',                 label: 'Funcionarios',        icono: '👔' },
       { tipo: 'dictador',                     label: 'Dictadura',           icono: '💂' }
     ]
   },
@@ -666,14 +669,26 @@ const macroCategorias = [
     ]
   },
   {
+    id: 'entorno_politico',
+    titulo: 'Entorno Político y Electoral',
+    descripcion: 'Candidatos, dirigentes de partidos y asesores políticos.',
+    items: [
+      { tipo: 'candidatos', label: 'Candidatos', icono: '🗳️' },
+      { tipo: 'dirigentes', label: 'Dirigentes', icono: '🗣️' },
+      { tipo: 'asesores',   label: 'Asesores',   icono: '📝' }
+    ]
+  },
+  {
     id: 'privado',
     titulo: 'Sector Privado, Legal y Fundaciones',
-    descripcion: 'Empresas, empresarios, abogados, fundaciones y actores involucrados en causas judiciales.',
+    descripcion: 'Empresas, empresarios, corporaciones, fundaciones y actores vinculados.',
     items: [
-      { tipo: 'empresas',    label: 'Empresas',    icono: '🏭' },
-      { tipo: 'empresarios', label: 'Empresarios', icono: '👔' },
-      { tipo: 'abogados',    label: 'Abogados',    icono: '⚖️' },
-      { tipo: 'fundaciones', label: 'Fundaciones', icono: '🤝' }
+      { tipo: 'empresas',      label: 'Empresas',      icono: '🏭' },
+      { tipo: 'empresarios',   label: 'Empresarios',   icono: '👔' },
+      { tipo: 'corporaciones', label: 'Corporaciones', icono: '🏢' },
+      { tipo: 'proveedores',   label: 'Proveedores',   icono: '📦' },
+      { tipo: 'abogados',      label: 'Abogados',      icono: '⚖️' },
+      { tipo: 'fundaciones',   label: 'Fundaciones',   icono: '🤝' }
     ]
   }
 ]

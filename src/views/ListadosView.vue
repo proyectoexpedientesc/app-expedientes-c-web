@@ -206,7 +206,7 @@ const GRUPOS_ESTADO = {
   'Crítico':     ['Crítico', 'Condenado', 'Condenada', 'Condenada / Delatora'],
 }
 
-// ── Categorías ────────────────────────────────────────────────────────
+// ── Categorías Actualizadas ───────────────────────────────────────────
 const categorias = [
   { tipo: 'diputados',                    label: 'Diputados' },
   { tipo: 'dictador',                     label: 'Dictador' },
@@ -215,6 +215,7 @@ const categorias = [
   { tipo: 'ministros',                    label: 'Ministros' },
   { tipo: 'subsecretarios',               label: 'Subsecretarios' },
   { tipo: 'seremis',                      label: 'Seremis' },
+  { tipo: 'funcionarios',                 label: 'Funcionarios' },
   { tipo: 'gobernadores',                 label: 'Gobernadores' },
   { tipo: 'delegados-presidenciales-reg', label: 'Delegados Regionales' },
   { tipo: 'delegados-presidenciales-pro', label: 'Delegados Provinciales' },
@@ -230,22 +231,30 @@ const categorias = [
   { tipo: 'carabineros',                  label: 'Carabineros' },
   { tipo: 'pdi',                          label: 'PDI' },
   { tipo: 'ejercito',                     label: 'Ejército' },
+  { tipo: 'candidatos',                   label: 'Candidatos' },
+  { tipo: 'dirigentes',                   label: 'Dirigentes' },
+  { tipo: 'asesores',                     label: 'Asesores' },
   { tipo: 'empresas',                     label: 'Empresas' },
   { tipo: 'empresarios',                  label: 'Empresarios' },
+  { tipo: 'corporaciones',                label: 'Corporaciones' },
+  { tipo: 'proveedores',                  label: 'Proveedores' },
   { tipo: 'abogados',                     label: 'Abogados' },
   { tipo: 'fundaciones',                  label: 'Fundaciones' },
 ]
 
+// ── Mapeo Actualizado de Macros ───────────────────────────────────────
 const MACRO_MAP = {
   'presidentes': 'ejecutivo', 'ministros': 'ejecutivo', 'subsecretarios': 'ejecutivo',
   'delegados-presidenciales-reg': 'ejecutivo', 'delegados-presidenciales-pro': 'ejecutivo',
-  'seremis': 'ejecutivo', 'dictador': 'ejecutivo',
+  'seremis': 'ejecutivo', 'dictador': 'ejecutivo', 'funcionarios': 'ejecutivo',
   'senadores': 'legislativo', 'diputados': 'legislativo',
   'ministros-corte-suprema': 'judicial', 'ministros-corte-apelaciones': 'judicial', 'jueces': 'judicial',
   'gobernadores': 'local', 'consejeros': 'local', 'alcaldes': 'local', 'concejales': 'local',
   'fiscales': 'autonomos', 'contraloria': 'autonomos', 'tc': 'autonomos',
   'carabineros': 'policias', 'pdi': 'policias', 'ejercito': 'policias',
-  'empresas': 'privado', 'empresarios': 'privado', 'abogados': 'privado', 'fundaciones': 'privado', // <-- ACTUALIZADO EN SECTOR PRIVADO
+  'candidatos': 'entorno_politico', 'dirigentes': 'entorno_politico', 'asesores': 'entorno_politico',
+  'empresas': 'privado', 'empresarios': 'privado', 'abogados': 'privado', 'fundaciones': 'privado',
+  'corporaciones': 'privado', 'proveedores': 'privado'
 }
 
 const macroActual        = computed(() => MACRO_MAP[props.tipo] || 'ejecutivo')
@@ -357,6 +366,7 @@ const tituloVista = computed(() => {
   if (macroActual.value === 'policias')          return 'Policías y Fuerzas Armadas'
   if (macroActual.value === 'privado')           return 'Sector Privado y Fundaciones'
   if (macroActual.value === 'autonomos')         return 'Órganos Autónomos'
+  if (macroActual.value === 'entorno_politico')  return 'Entorno Político y Electoral'
   return 'Gobierno y Estado'
 })
 

@@ -5,11 +5,11 @@ import DetallePersonaView from '../views/DetallePersonaView.vue'
 import CausasView from '../views/CausasView.vue'
 import TransparencyPolicy from '../views/TransparencyPolicy.vue'
 
-// 🌟 ARREGLO ACTUALIZADO CON TODAS LAS NUEVAS INSTITUCIONES
+// 🌟 ARREGLO ACTUALIZADO CON TODAS LAS NUEVAS INSTITUCIONES Y ROLES
 const tiposValidos = [
   // Poder Ejecutivo
   'presidentes', 'ministros', 'subsecretarios', 'seremis', 'dictador',
-  'delegados-presidenciales-reg', 'delegados-presidenciales-pro',
+  'delegados-presidenciales-reg', 'delegados-presidenciales-pro', 'funcionarios',
   
   // Poder Legislativo
   'senadores', 'diputados',
@@ -26,8 +26,11 @@ const tiposValidos = [
   // Policías y Fuerzas Armadas
   'carabineros', 'pdi', 'ejercito',
   
-  // Sector Privado, Legal y Fundaciones
-  'empresas', 'empresarios', 'abogados', 'fundaciones'
+  // Sector Privado, Legal, Fundaciones y Corporaciones
+  'empresas', 'empresarios', 'abogados', 'fundaciones', 'corporaciones', 'proveedores',
+
+  // Entorno Político y Electoral
+  'candidatos', 'dirigentes', 'asesores'
 ]
 
 const router = createRouter({
@@ -65,7 +68,6 @@ const router = createRouter({
       component: ListadosView,
       props: true,
       beforeEnter: (to) => {
-        // Si el usuario intenta entrar a una URL que no está en tiposValidos, rebota al Home
         if (!tiposValidos.includes(to.params.tipo)) {
           return { path: '/' }
         }
