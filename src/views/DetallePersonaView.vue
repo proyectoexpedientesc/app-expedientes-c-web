@@ -102,7 +102,7 @@
       <div v-if="persona.causas && persona.causas.length > 0" class="info-card info-card-full">
         <h2 class="card-titulo">Causas e Investigaciones Asociadas</h2>
         <div class="causas-grid">
-          <div v-for="causa in persona.causas" :key="causa.id_causa" class="causa-item">
+          <div v-for="causa in causasOrdenadas" :key="causa.id_causa" class="causa-item">
             <div class="causa-cabecera">
               <h3>
                 <router-link :to="`/causas?id=${causa.id_causa}`" class="ver-red-btn">
@@ -112,9 +112,10 @@
               <span class="causa-ano" v-if="causa.anio">Año: {{ causa.anio }}</span>
             </div>
             
-            <p class="causa-detalle">{{ causa.detalle }}</p>
+            <!-- Detalle EXCLUSIVO de la persona -->
+            <p class="causa-detalle">{{ causa.detalle_personal || causa.detalle }}</p>
             
-            <!-- BLOQUE DE METADATOS REESTRUCTURADO -->
+            <!-- BLOQUE DE METADATOS -->
             <div class="causa-metadatos">
               <p class="causa-fecha" v-if="causa.fecha_delito">
                 <strong>Fecha del suceso estimado:</strong> <span>{{ causa.fecha_delito }}</span>
@@ -127,10 +128,10 @@
               </p>
             </div>
 
-            <!-- BLOQUE DE SENTENCIA REESTRUCTURADO -->
-            <div class="causa-sentencia-bloque" v-if="causa.resolucion">
+            <!-- Sentencia EXCLUSIVA de la persona -->
+            <div class="causa-sentencia-bloque" v-if="causa.resolucion_personal || causa.resolucion">
               <p class="causa-fecha"><strong>Sentencia / Conclusión:</strong></p>
-              <p class="causa-sentencia">{{ causa.resolucion }}</p>
+              <p class="causa-sentencia">{{ causa.resolucion_personal || causa.resolucion }}</p>
             </div>
 
           </div>
@@ -235,6 +236,27 @@ const getEstadoClass = (estado) => {
     default:            return 'estado-default'
   }
 }
+
+// Ordena las causas: Primero por año absoluto. Si coinciden, desempata con fecha_delito.
+const causasOrdenadas = computed(() => {
+  if (!persona.value || !persona.value.causas || persona.value.causas.length === 0) return []
+  
+  return [...persona.value.causas].sort((a, b) => {
+    const anoA = parseInt(a.anio) || 0
+    const anoB = parseInt(b.anio) || 0
+    
+    // 1. Prioridad absoluta: Ordenar por el campo "anio"
+    if (anoA !== anoB) {
+      return anoB - anoA
+    }
+    
+    // 2. Si es el mismo año (Ej: ambas son 2026), desempatamos con fecha_delito
+    const fechaA = a.fecha_delito || ''
+    const fechaB = b.fecha_delito || ''
+    
+    return fechaB.localeCompare(fechaA)
+  })
+})
 </script>
 
 <style scoped>

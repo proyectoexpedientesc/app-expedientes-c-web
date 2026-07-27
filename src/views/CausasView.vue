@@ -136,7 +136,8 @@
             <div class="nodo-central">
               <div class="nodo-icono">📁</div>
               <h2 class="nodo-titulo">{{ causaSeleccionada.titulo }}</h2>
-              <p class="nodo-detalle">{{ causaSeleccionada.detalle }}</p>
+              <!-- Prioriza el detalle general de la causa unificada -->
+              <p class="nodo-detalle">{{ causaSeleccionada.detalle_general || causaSeleccionada.detalle }}</p>
               <div class="nodo-meta" v-if="causaSeleccionada.fecha_delito">
                 Fecha: {{ causaSeleccionada.fecha_delito }}
               </div>
