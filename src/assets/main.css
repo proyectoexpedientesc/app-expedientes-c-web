@@ -39,6 +39,10 @@
   --state-warn-txt:#fcd34d;
   --state-err-bg:  #450a0a;
   --state-err-txt: #fca5a5;
+
+  /* Bordes/sombras suaves — para tarjetas con menos contraste contra el fondo */
+  --border-soft: rgba(255, 255, 255, 0.07);
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.22);
 }
 
 :root.tema-claro {
@@ -68,6 +72,10 @@
   --state-warn-txt:#854d0e;
   --state-err-bg:  #fee2e2;
   --state-err-txt: #991b1b;
+
+  /* Bordes/sombras suaves — versión clara */
+  --border-soft: rgba(15, 23, 42, 0.08);
+  --shadow-soft: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
 
 
@@ -400,10 +408,13 @@ a { text-decoration: none; }
 
 /* Estado micro (versión compacta para CausasView) */
 .estado-micro {
-  padding: 2px 8px;
+  display: inline-block;
+  padding: 3px 10px;
   border-radius: 100px;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
   align-self: center;
 }
 
@@ -1198,7 +1209,7 @@ a { text-decoration: none; }
 
 .nodo-info { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
 .nodo-info strong { color: var(--text-main); font-size: 0.82rem; }
-.nodo-info span   { color: var(--text-dim);  font-size: 0.72rem; }
+.nodo-info span:not(.estado-micro) { color: var(--text-dim);  font-size: 0.72rem; }
 
 .nodo-link {
   display: inline-block;
@@ -1364,7 +1375,7 @@ a { text-decoration: none; }
   margin-bottom: 10px;
 }
 
-.causa-cabecera h3 { margin: 0; }
+.causa-cabecera h3 { margin: 0; color: var(--accent-red); font-weight: 700; }
 
 .ver-red-btn {
   color: #60a5fa;
@@ -2055,14 +2066,156 @@ input:focus-visible {
 }
 
 .partido-logo-central img {
-  width: 56px;
-  height: 56px;
+  width: 140px;
+  height: 140px;
+  max-width: 100%;
   object-fit: contain;
 }
 
 .tarjeta-partido-wrapper {
   display: block;
   margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+/* ─── 13. DETALLE DE PARTIDO ──────────────────────────── */
+
+.nodo-central-logo-solo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 40px;
+  min-width: 260px;
+  max-width: 100%;
+}
+
+.nodo-central-logo-solo .nodo-icono {
+  font-size: 64px;
+  margin: 0;
+}
+
+.partido-info-section {
+  max-width: 800px;
+  margin: 0 auto 3rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+/* Encabezado con título + píldora de estado, dentro de una .info-card */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+}
+
+/* Título propio de esta vista (distinto del .card-titulo eyebrow que ya usan
+   Transparencia/Detalle, para no afectar esas vistas) */
+.card-titulo-partido {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.card-header .card-titulo-partido {
+  margin-bottom: 0;
+}
+
+.card-titulo-icono {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.metadatos-partido {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 0.4rem;
+}
+
+.causa-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ── Responsive: DetallePartidoView ── */
+@media (max-width: 640px) {
+  .nodo-central-logo-solo {
+    min-width: 0;
+    width: 100%;
+    padding: 24px;
+  }
+
+  .partido-logo-central img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .partido-info-section {
+    padding: 0 4px;
+    gap: 1rem;
+  }
+
+  .partido-info-section .info-card {
+    padding: 20px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* ─── 14. SUAVIZADO DE TARJETAS ───────────────────────── */
+
+/* Bordes menos saturados en todas las tarjetas de la app */
+.info-card,
+.causa-item,
+.nodo-politico,
+.chart-card,
+.stat-card,
+.perfil-card,
+.report-box,
+.partido-card,
+.home-card {
+  border-color: var(--border-soft);
+}
+
+/* Sombra más difusa/suave en vez de la sombra dura anterior */
+.info-card,
+.causa-item,
+.chart-card,
+.stat-card,
+.perfil-card,
+.report-box {
+  box-shadow: var(--shadow-soft);
+}
+
+/* La tarjeta central (nodo-central) mantiene el color de marca del partido en
+   el borde, pero más delgado y con sombra suave en vez de shadow-lg */
+.nodo-central {
+  border-width: 1px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* Fondo blanco CON transparencia (no sólido) para la tarjeta del logo del
+   partido — el color de marca se sigue viendo en el borde (borderColor
+   inline), pero el fondo asegura contraste para logos oscuros. */
+.nodo-central-logo-solo {
+  background: #ffffff;
 }
 
 .partidos-grid {
@@ -2093,14 +2246,15 @@ input:focus-visible {
 
 .partido-card-logo {
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 64px;
+  height: 64px;
+  padding: 6px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
 }
 
 .partido-card-logo img {
@@ -2110,7 +2264,7 @@ input:focus-visible {
 }
 
 .partido-card-logo-fallback {
-  font-size: 22px;
+  font-size: 26px;
 }
 
 .partido-card-info {

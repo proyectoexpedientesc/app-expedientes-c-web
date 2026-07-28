@@ -27,18 +27,83 @@
         <div class="arbol-container">
 
           <div class="tarjeta-partido-wrapper">
-          <div class="nodo-central nodo-central-logo-solo" :style="{ borderColor: partidoActual.color }">
-            <div class="nodo-icono partido-logo-central">
-              <img
-                v-if="partidoActual.logo && !logoRoto"
-                :src="partidoActual.logo"
-                :alt="partidoActual.nombre"
-                @error="logoRoto = true"
-              />
-              <span v-else>🏛️</span>
+            <div class="nodo-central nodo-central-logo-solo" :style="{ borderColor: partidoActual.color }">
+              <div class="nodo-icono partido-logo-central">
+                <img
+                  v-if="partidoActual.logo && !logoRoto"
+                  :src="partidoActual.logo"
+                  :alt="partidoActual.nombre"
+                  @error="logoRoto = true"
+                />
+                <span v-else>🏛️</span>
+              </div>
             </div>
           </div>
+
+          <!-- Información del Partido -->
+          <div class="partido-info-section">
+
+            <!-- Biografía / Observaciones: siempre visible, con respaldo si falta el dato -->
+            <div class="info-card">
+              <div class="card-header">
+                <h2 class="card-titulo-partido">
+                  <span class="card-titulo-icono">📋</span>
+                  Acerca del Partido
+                </h2>
+                <span
+                  v-if="partidoInfo?.estado_judicial"
+                  class="estado-tag"
+                  :class="getEstadoClass(partidoInfo.estado_judicial)"
+                >
+                  {{ partidoInfo.estado_judicial }}
+                </span>
+              </div>
+
+              <p class="observaciones-texto">
+                {{ partidoInfo?.observaciones || 'Aún no hay información registrada sobre este partido.' }}
+              </p>
+
+              <div
+                v-if="partidoInfo?.fecha_creacion && partidoInfo.fecha_creacion !== 'N/A'"
+                class="metadatos-partido"
+              >
+                <span class="partido-tag">📅 Fundado en {{ partidoInfo.fecha_creacion }}</span>
+              </div>
+            </div>
+
+            <!-- Causas o Controversias Institucionales -->
+            <div v-if="partidoInfo?.causas && partidoInfo.causas.length > 0" class="info-card">
+              <h2 class="card-titulo-partido">
+                <span class="card-titulo-icono">⚖️</span>
+                Controversias Institucionales
+              </h2>
+
+              <div class="causas-grid">
+                <div v-for="causa in partidoInfo.causas" :key="causa.id_causa" class="causa-item">
+                  <div class="causa-cabecera">
+                    <h3>{{ causa.titulo }}</h3>
+                    <span class="causa-ano">{{ causa.anio }}</span>
+                  </div>
+
+                  <p class="causa-detalle">{{ causa.detalle }}</p>
+
+                  <div v-if="causa.estado_del_caso || causa.resolucion" class="causa-pills">
+                    <span
+                      v-if="causa.estado_del_caso"
+                      class="estado-tag"
+                      :class="getEstadoClass(causa.estado_del_caso)"
+                    >
+                      {{ causa.estado_del_caso }}
+                    </span>
+                    <span v-if="causa.resolucion" class="partido-tag">
+                      {{ causa.resolucion }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+          <!-- FIN Información del Partido -->
 
           <div v-if="politicosDelPartido.length === 0" class="empty-state">
             Sin políticos registrados para este partido.
@@ -107,17 +172,19 @@ const marcarFotoRota = (id) => {
 const getInitials = (nombre, apellidos) =>
   ((nombre?.[0] ?? '') + (apellidos?.[0] ?? '')).toUpperCase() || '?'
 
+// Reutilizada para: políticos (estado-micro), estado del partido y estado de cada
+// causa institucional (estado-tag) — misma clasificación en toda la vista.
 const getEstadoClass = (estado) => {
   switch (estado) {
     case 'Limpio':      return 'estado-success'
     case 'Observación': return 'estado-warning'
-    case 'Prescrita': return 'estado-warning'
-    case 'En Litigio': return 'estado-warning'
+    case 'Prescrita':   return 'estado-warning'
+    case 'En Litigio':  return 'estado-warning'
     case 'En Litigio / Delatora': return 'estado-warning'
     case 'Crítico':     return 'estado-danger'
-    case 'Condenado':     return 'estado-danger'
-    case 'Condenada':     return 'estado-danger'
-    case 'Condenada / Delatora':     return 'estado-danger'
+    case 'Condenado':   return 'estado-danger'
+    case 'Condenada':   return 'estado-danger'
+    case 'Condenada / Delatora':  return 'estado-danger'
     default:            return 'estado-default'
   }
 }
@@ -146,6 +213,17 @@ const partidoActual = computed(() => {
   }
 })
 
+// ── Extrae la data extendida (biografía, causas) DIRECTAMENTE DESDE FIREBASE ──
+// Tolerante a variaciones: intenta por id_partido, luego por id, luego por resolverIdPartido
+// (por si algún documento de la colección "partidos" no tiene el campo id_partido bien seteado).
+const partidoInfo = computed(() => {
+  const docsPartido = politicos.value.filter(p => p.tipo === 'partidos')
+  return docsPartido.find(p => p.id_partido === props.id)
+    || docsPartido.find(p => p.id === props.id)
+    || docsPartido.find(p => resolverIdPartido(p) === props.id)
+    || null
+})
+
 const politicosDelPartido = computed(() => {
   const lista = politicosPorPartido.value[props.id] || []
   return [...lista].sort((a, b) => (a.apellidos ?? '').localeCompare(b.apellidos ?? ''))
@@ -164,34 +242,3 @@ onMounted(async () => {
   cargando.value = false
 })
 </script>
-
-<style scoped>
-/* Logo grande en el panel central (reemplaza el emoji 🏛️ cuando existe) */
-.partido-logo-central img {
-  width: 140px;
-  height: 140px;
-  object-fit: contain;
-}
-
-/* Tarjeta central reducida a solo el logo: menos alto, más ancho de imagen */
-.nodo-central-logo-solo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 40px;
-  min-width: 260px;
-}
-
-.nodo-central-logo-solo .nodo-icono {
-  font-size: 64px;
-  margin: 0;
-}
-
-/* Empuja la tarjeta central completa (borde incluido) hacia abajo,
-   separándola del header. Usa un wrapper propio para no depender de
-   clases globales compartidas con otras vistas (CausasView, etc). */
-.tarjeta-partido-wrapper {
-  display: block;
-  margin-top: 40px;
-}
-</style>
