@@ -1928,6 +1928,41 @@ input:focus-visible {
   .table-wrapper  { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .data-table     { min-width: 640px; }
 
+  /* Excepción: la tabla de Votaciones se convierte en tarjetas apiladas
+     en vez de scrollear horizontalmente — más legible en pantallas angostas */
+  .tabla-votaciones                 { min-width: 0; }
+  .tabla-votaciones thead           { display: none; }
+  .tabla-votaciones tbody           { display: block; }
+
+  .tabla-votaciones tbody tr {
+    display: block;
+    background: var(--bg-row);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 10px;
+  }
+
+  .tabla-votaciones tbody td {
+    display: block;
+    padding: 5px 0;
+    border: none;
+    font-size: 0.85rem;
+  }
+
+  .tabla-votaciones tbody td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+  }
+
+  .table-wrapper:has(.tabla-votaciones) { overflow-x: visible; }
+
   .list-avatar    { width: 34px; height: 34px; border-radius: 8px; font-size: 0.85rem; }
   .td-avatar      { width: 46px; }
   .nombre-cell strong { font-size: 0.82rem; }

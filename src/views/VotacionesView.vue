@@ -37,7 +37,7 @@
             <span class="result-count">{{ votacionesFiltradas.length }} votación(es) encontradas</span>
           </div>
 
-          <table class="data-table">
+          <table class="data-table tabla-votaciones">
             <thead>
               <tr>
                 <th>Fecha</th>
@@ -54,15 +54,15 @@
                 class="fila-clickable"
                 @click="$router.push(`/votaciones/${vot.id_votacion}`)"
               >
-                <td><strong>{{ vot.fecha || 'Sin fecha' }}</strong></td>
-                <td><span class="tipo-badge">{{ vot.camara || '—' }}</span></td>
-                <td>{{ vot.titulo || 'Sin título' }}</td>
-                <td>
+                <td data-label="Fecha"><strong>{{ vot.fecha || 'Sin fecha' }}</strong></td>
+                <td data-label="Cámara"><span class="tipo-badge">{{ vot.camara || '—' }}</span></td>
+                <td data-label="Título del Proyecto">{{ vot.titulo || 'Sin título' }}</td>
+                <td data-label="Estado">
                   <span class="estado-tag" :class="vot.estado === 'Aprobado' ? 'estado-success' : 'estado-danger'">
                     {{ vot.estado || 'Sin estado' }}
                   </span>
                 </td>
-                <td class="votos-resumen">
+                <td data-label="Votación" class="votos-resumen">
                   <span class="voto-favor">{{ vot.totales?.a_favor ?? 0 }}</span>
                   <span class="votos-sep">/</span>
                   <span class="voto-contra">{{ vot.totales?.en_contra ?? 0 }}</span>
