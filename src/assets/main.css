@@ -1830,6 +1830,10 @@ input:focus-visible {
 
 /* Tabla — separador de filas más visible en claro */
 :root.tema-claro .data-table td { border-bottom-color: #f1f5f9; }
+
+/* Mejor contraste para partido-tag (fecha, cámara, ID) en tema claro —
+   el gris --text-dim se ve bien en oscuro pero muy pálido sobre fondo claro */
+:root.tema-claro .partido-tag { color: var(--text-muted); }
 :root.tema-claro .data-table thead tr { background: #f1f5f9; }
 
 /* Sidebar fades en modo claro */
