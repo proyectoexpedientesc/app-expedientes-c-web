@@ -54,7 +54,7 @@
                 class="fila-clickable"
                 @click="$router.push(`/votaciones/${vot.id_votacion}`)"
               >
-                <td data-label="Fecha"><strong>{{ vot.fecha || 'Sin fecha' }}</strong></td>
+                <td data-label="Fecha"><span class="fecha-votacion">{{ vot.fecha || 'Sin fecha' }}</span></td>
                 <td data-label="Cámara"><span class="tipo-badge">{{ vot.camara || '—' }}</span></td>
                 <td data-label="Título del Proyecto">{{ vot.titulo || 'Sin título' }}</td>
                 <td data-label="Estado">
