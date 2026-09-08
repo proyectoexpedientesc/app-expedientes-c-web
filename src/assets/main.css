@@ -766,6 +766,11 @@ a { text-decoration: none; }
 /* Tabla */
 .table-section { padding: 0 0 60px; }
 
+/* Modificador: cuando table-section va directo después de hero-section
+   (sin menu-section/stats-section en medio, como en VotacionesView),
+   necesita su propio padding-top para no quedar pegada al hero */
+.table-section-top { padding-top: 32px; }
+
 .table-wrapper {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -2282,4 +2287,104 @@ input:focus-visible {
 .partido-card-cantidad {
   font-size: 13px;
   opacity: 0.7;
+}
+
+/* ─── 15. VOTACIONES (VotacionesView.vue + DetalleVotacionView.vue) ──── */
+
+.hero-text { flex: 1; min-width: 0; }
+.table-header-bar { display: flex; align-items: center; justify-content: space-between; }
+
+.votos-resumen { font-weight: 700; font-size: 0.85rem; white-space: nowrap; }
+.votos-resumen .voto-favor { color: #4ade80; }
+.votos-resumen .voto-contra { color: #f87171; }
+.votos-resumen .voto-abs   { color: #facc15; }
+.votos-resumen .votos-sep  { color: var(--text-dim); font-weight: 400; margin: 0 3px; }
+
+/* Detalle de votación */
+.back-btn-votacion { margin-bottom: 20px; }
+.votacion-header { margin-bottom: 28px; }
+.votacion-materia { color: var(--text-dim); margin-bottom: 18px; line-height: 1.5; }
+
+.marcadores-wrap { display: flex; gap: 10px; margin-bottom: 20px; }
+.marcador {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 14px; border-radius: 10px;
+  color: white; font-weight: 800;
+}
+
+.m-valor { font-size: 2.2rem; line-height: 1; margin-bottom: 4px; }
+.m-label { font-size: 0.7rem; letter-spacing: 0.12em; opacity: 0.9; }
+
+.m-favor { background: linear-gradient(160deg, #16a34a, #15803d); }
+.m-contra { background: linear-gradient(160deg, #dc2626, #b91c1c); }
+.m-abs   { background: linear-gradient(160deg, #eab308, #ca8a04); color: #1e293b; }
+.m-ausente { background: linear-gradient(160deg, #334155, #1e293b); color: var(--text-dim); border: 1px solid var(--border-mid); }
+
+.tablero-titulo {
+  color: var(--text-dim); font-size: 0.68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;
+}
+
+.tablero-grilla {
+  columns: 5; column-gap: 5px; background-color: var(--bg-card);
+  padding: 6px; border-radius: 8px; border: 1px solid var(--border-mid);
+}
+
+.voto-item {
+  display: flex; align-items: center;
+  height: 24px; /* ALTO FIJO más compacto */
+  padding: 0 7px; margin-bottom: 3px; font-size: 0.7rem; font-weight: 600;
+  border-radius: 4px; text-decoration: none; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  break-inside: avoid; -webkit-column-break-inside: avoid; page-break-inside: avoid;
+}
+
+.voto-item:hover { opacity: 0.85; transform: translateY(-1px); }
+
+.bg-a-favor   { background: #16a34a; color: white; border: 1px solid #14532d; }
+.bg-en-contra { background: #dc2626; color: white; border: 1px solid #7f1d1d; }
+.bg-abstencion{ background: #eab308; color: #1e293b; border: 1px solid #854d0e; }
+.bg-ausente   { background: #0f172a; color: var(--text-dim); border: 1px solid #1e293b; }
+
+.voto-icono {
+  width: 12px; /* ANCHO FIJO PARA ALINEAR NOMBRES */
+  text-align: center; margin-right: 5px; font-weight: 900;
+  font-size: 0.78rem; flex-shrink: 0;
+}
+
+.voto-nombre { overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Leyenda de colores ──────────────────────────────────────────── */
+.leyenda-votos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 0.74rem;
+  color: var(--text-dim);
+}
+
+.leyenda-item { display: flex; align-items: center; gap: 6px; }
+
+.leyenda-punto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+@media (max-width: 1024px) { .tablero-grilla { columns: 4; } }
+@media (max-width: 800px) {
+  .tablero-grilla { columns: 3; }
+  .m-valor { font-size: 1.9rem; }
+}
+@media (max-width: 600px) {
+  .marcadores-wrap { flex-direction: column; gap: 6px; }
+  .marcador { padding: 12px; }
+  .tablero-grilla { columns: 2; column-gap: 5px; }
 }

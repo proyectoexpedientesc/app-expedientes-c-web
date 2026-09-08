@@ -22,6 +22,9 @@
             <router-link to="/partidos" class="action-btn primary-btn">
               🏛️ Ver Partidos Políticos
             </router-link>
+            <router-link to="/votaciones" class="action-btn primary-btn" style="background-color: var(--rojo-sangre); border-color: var(--rojo-sangre);">
+              🗳️ Votaciones en Congreso
+            </router-link>
           </div>
         </div>
 
@@ -615,7 +618,7 @@ const macroCategorias = [
       { tipo: 'delegados-presidenciales-pro', label: 'Delegados Prov.',     icono: '📌' },
       { tipo: 'seremis',                      label: 'Seremis',             icono: '🏢' },
       { tipo: 'funcionarios',                 label: 'Funcionarios',        icono: '👔' },
-      { tipo: 'dictador',                     label: 'Dictadura',           icono: '💂' }
+      { tipo: 'dictador',                     label: 'Dictadura',           icono: '💂' },
     ]
   },
   {
@@ -624,7 +627,8 @@ const macroCategorias = [
     descripcion: 'Representantes del Congreso Nacional de Chile.',
     items: [
       { tipo: 'senadores', label: 'Senadores', icono: '📜' },
-      { tipo: 'diputados', label: 'Diputados', icono: '🏛️' }
+      { tipo: 'diputados', label: 'Diputados', icono: '🏛️' },
+      { tipo: 'votaciones', label: 'Votaciones', icono: '🗳️' } // NUEVO ITEM
     ]
   },
   {

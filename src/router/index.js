@@ -62,6 +62,19 @@ const router = createRouter({
       name: 'transparencia',
       component: TransparencyPolicy,
     },
+    // 🔥 RUTAS DE VOTACIONES MOVIDAS ARRIBA DE LOS TIPOS DINÁMICOS
+    {
+      path: '/votaciones',
+      name: 'VotacionesListado',
+      component: () => import('../views/VotacionesView.vue')
+    },
+    {
+      path: '/votaciones/:id',
+      name: 'VotacionDetalle',
+      component: () => import('../views/DetalleVotacionView.vue'),
+      props: true
+    },
+    // 🔥 RUTA DINÁMICA SIEMPRE AL FINAL
     {
       path: '/:tipo',
       name: 'politicos',
@@ -78,7 +91,7 @@ const router = createRouter({
       name: 'detalle-persona',
       component: DetallePersonaView,
       props: true,
-    },
+    }
   ],
 })
 
