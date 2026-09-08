@@ -1430,6 +1430,13 @@ a { text-decoration: none; }
   text-decoration: none;
   margin-bottom: 16px;
   transition: color 0.2s;
+  /* Reset de estilos nativos de <button>, para cuando .back-btn se usa en un
+     botón (ej. DetallePersonaView) en vez de un <router-link> */
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .back-btn:hover { color: var(--accent-blue); }
@@ -1915,6 +1922,11 @@ input:focus-visible {
 
   .data-table th,
   .data-table td  { padding: 10px; }
+
+  /* Tabla con scroll horizontal en vez de recortar/apretar columnas
+     (afecta a cualquier .table-wrapper, incluida VotacionesView) */
+  .table-wrapper  { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table     { min-width: 640px; }
 
   .list-avatar    { width: 34px; height: 34px; border-radius: 8px; font-size: 0.85rem; }
   .td-avatar      { width: 46px; }

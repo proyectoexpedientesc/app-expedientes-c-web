@@ -22,7 +22,7 @@
         <span>{{ persona.nombre }} {{ persona.apellidos }}</span>
       </nav>
 
-      <router-link :to="`/${tipo}`" class="back-btn">← Volver al listado</router-link>
+      <button @click="volver" class="back-btn">← Volver al listado</button>
 
       <div class="perfil-card">
         <div class="perfil-avatar">
@@ -158,14 +158,27 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { obtenerTodos } from '../firebase'
 import { getFoto } from '../utils/fotos'
 
 const props = defineProps(['tipo', 'id'])
+const router = useRouter()
 
 const persona   = ref(null)
 const fotoError = ref(false)
 const cargando  = ref(true)
+
+// Vuelve a la página anterior real (votación, causa, categoría, etc.) en vez de
+// forzar siempre la categoría del político. Si no hay historial previo (ej. la
+// persona entró directo por link/bookmark), cae de vuelta a la categoría.
+const volver = () => {
+  if (window.history.state?.back) {
+    router.back()
+  } else {
+    router.push(`/${props.tipo}`)
+  }
+}
 
 const LABELS = {
   'diputados':                    'Diputados',
